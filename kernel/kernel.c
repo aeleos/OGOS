@@ -13,15 +13,11 @@ int kernel_main(){
   printf("Hello, you absolute piece of shit\nSuck poop JackS\n");
   printf("Number test: %d\n", 1000);
   printf("Binary test: %x\n", 1000);
-  if (are_interrupts_enabled()){
-    printf("Interrupts enabled");
-  } else {
-    printf("Interrupts disabled");
-  }
 
-  init_timer(50);
 
-  //asm volatile ("int $0x3");
+  //init_timer(50);
+
+  asm volatile ("int $0x3");
   //asm volatile ("int $0x4");
   //return 0;
 }
