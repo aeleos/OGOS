@@ -18,6 +18,6 @@ int kernel_main(){
   //init_timer(50);
 
   asm volatile ("int $0x3");
-  //asm volatile ("int $0x4");
+  asm volatile ("int $0x11");
   //return 0;
 }

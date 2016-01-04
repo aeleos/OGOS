@@ -110,6 +110,36 @@ int printf(const char* restrict format, ...)
 			itoa( i, buf, 16 );
 			print(buf, strlen(buf));
 		}
+    else if ( *format == 'f')
+    {
+      int n = va_arg(parameters, int);
+      format++;
+      if (n == 0)
+      {
+          putchar('0');
+          return;
+      }
+
+      int32_t acc = n;
+      char c[32];
+      int i = 0;
+      while (acc > 0)
+      {
+          c[i] = '0' + acc%10;
+          acc /= 10;
+          i++;
+      }
+      c[i] = 0;
+
+      char c2[32];
+      c2[i--] = 0;
+      int j = 0;
+      while(i >= 0)
+      {
+          c2[i--] = c[j++];
+      }
+      print(c2, strlen(c2));
+    }
 		else
 		{
 			goto incomprehensible_conversion;
