@@ -14,7 +14,8 @@ int kernel_main(){
   printf("Number test: %d\n", 1000);
   printf("Binary test: %x\n", 1000);
 
-
+  printf("row:%d, column:%d\n",terminal_row, terminal_column);
+  printf("-------------------|||||||||--------");
   //init_timer(50);
 
   asm volatile ("int $0x3");

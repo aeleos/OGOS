@@ -16,7 +16,7 @@ void terminal_initialize(void)
 {
 	terminal_row = 0;
 	terminal_column = 0;
-	terminal_setcolor(make_color(COLOR_BLUE, COLOR_RED));
+	terminal_setcolor(make_color(COLOR_LIGHT_GREY, COLOR_DARK_GREY));
 	terminal_buffer = VGA_MEMORY;
 	terminal_clrscreen();
 }
@@ -45,6 +45,7 @@ void terminal_scroll(void){
       }
     }
   }
+	move_cursor();
 }
 
 
@@ -70,6 +71,7 @@ void terminal_putchar(char c)
 		} else {
 			terminal_row++;
 		}
+		move_cursor();
 		return;
 	}
 	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
@@ -88,11 +90,15 @@ void terminal_putchar(char c)
 void move_cursor()
 {
    // The screen is 80 characters wide...
-   size_t cursorLocation = VGA_HEIGHT * terminal_row + terminal_column;
-   outb(0x3D4, 14);                  // Tell the VGA board we are setting the high cursor byte.
-   outb(0x3D5, cursorLocation >> 8); // Send the high cursor byte.
-   outb(0x3D4, 15);                  // Tell the VGA board we are setting the low cursor byte.
-   outb(0x3D5, cursorLocation);      // Send the low cursor byte.
+	const size_t index = terminal_row * VGA_WIDTH + terminal_column;
+
+	 // cursor LOW port to vga INDEX register
+	outb(0x3D4, 14); // Tell the VGA board we are setting the high cursor byte.
+ 	outb(0x3D5, index >> 8); // Send the high cursor byte.
+ 	outb(0x3D4, 15); // Tell the VGA board we are setting the low cursor byte.
+ 	outb(0x3D5, index); // Send the low cursor byte.
+
+
 }
 
 void terminal_write(const char* data, size_t size)
