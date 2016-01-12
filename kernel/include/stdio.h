@@ -13,18 +13,20 @@ extern "C" {
 #include <stdlib.h>
 #include <tty.h>
 
-void print(const char*, size_t);
+//void print(const char*, size_t);
 int printf(const char* __restrict, ...);
 int putchar(int);
 int puts(const char*);
 char* itoa(int, char*, int);
-void outb(uint16_t, uint8_t);
-void outw(uint16_t, uint16_t);
-void outl(uint16_t, uint32_t);
-uint8_t inb(uint16_t);
-uint16_t inw(uint16_t);
-uint32_t inl(uint16_t);
-void io_wait(void);
+unsigned char inportb(uint16_t port);
+void outportb(uint16_t port, uint8_t data);
+uint16_t inports(uint16_t port);
+void outports(uint16_t port, uint16_t data);
+uint32_t inportl(uint16_t port);
+void outportl(uint16_t port, uint32_t data);
+void inportsm(uint16_t port, unsigned char * data, uint32_t size);
+void outportsm(uint16_t port, unsigned char * data, uint32_t size);
+//void io_wait(void);
 
 #ifdef __cplusplus
 }

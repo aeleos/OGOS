@@ -1,10 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vga.h>
-void terminal_clrscreen(void);
-void terminal_scroll(void);
-void terminal_setcolor(uint8_t color);
-void move_cursor(void);
+
 
 size_t terminal_row;
 size_t terminal_column;
@@ -93,10 +90,10 @@ void move_cursor()
 	const size_t index = terminal_row * VGA_WIDTH + terminal_column;
 
 	 // cursor LOW port to vga INDEX register
-	outb(0x3D4, 14); // Tell the VGA board we are setting the high cursor byte.
- 	outb(0x3D5, index >> 8); // Send the high cursor byte.
- 	outb(0x3D4, 15); // Tell the VGA board we are setting the low cursor byte.
- 	outb(0x3D5, index); // Send the low cursor byte.
+	outportb(0x3D4, 14); // Tell the VGA board we are setting the high cursor byte.
+ 	outportb(0x3D5, index >> 8); // Send the high cursor byte.
+ 	outportb(0x3D4, 15); // Tell the VGA board we are setting the low cursor byte.
+ 	outportb(0x3D5, index); // Send the low cursor byte.
 
 
 }

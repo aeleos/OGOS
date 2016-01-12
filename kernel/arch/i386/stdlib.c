@@ -8,6 +8,19 @@ size_t strlen(const char* string)
 	return result;
 }
 
+int toupper(int c) {
+	if (!isalpha(c))
+		return c;
+
+	return c - 32;
+}
+
+int isalpha(int c) {
+	return (c >= 'A' && c <= 'Z')
+		|| (c >= 'a' && c <= 'z');
+}
+
+
 void cpuid(int code, uint32_t* a, uint32_t* d){
   asm volatile ( "cpuid" : "=a"(*a), "=d"(*d) : "0"(code) : "ebx", "ecx");
 }
@@ -57,4 +70,13 @@ void lidt(void* base, uint16_t size)
     IDTR.length = size;
     IDTR.base = (uint32_t)base;
     asm volatile ( "lidt (%0)" : : "r"(&IDTR) );
+}
+
+__attribute__((__noreturn__))
+void abort()
+{
+	// TODO: Add proper kernel panic.
+	printf("Kernel Panic: abort()\n");
+	while (1) {}
+	__builtin_unreachable();
 }

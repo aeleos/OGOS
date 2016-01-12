@@ -1,25 +1,32 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <timer.h>
-#include <isr.h>
+#include <irq.h>
+#include <sys.h>
 
 
-unsigned int tick = 0;
+static uint32_t current_tick;
 
-static void timer_callback(registers_t regs){
-  tick++;
-  printf("\nTick: %d", tick);
+void init_timer() {
+	uint32_t divisor = TIMER_QUOTIENT / TIMER_FREQ;
+
+	outportb(PIT_CMD, PIT_SET);
+	outportb(PIT_0, divisor & 0xFF);
+	outportb(PIT_0, (divisor >> 8) & 0xFF);
+
+	irq_register_handler(IRQ0, &timer_callback);
 }
 
-void init_timer(unsigned int frequency){
-  register_interrupt_handler(IRQ0, &timer_callback);
-  uint32_t divisor = 1193180 / frequency;
+void timer_callback(registers_t* regs) {
+	UNUSED(regs);
 
-  outb(0x43, 0x36);
+	current_tick++;
+}
 
-  uint8_t l = (uint8_t)(divisor & 0xFF);
-  uint8_t h = (uint8_t)((divisor >> 8) & 0xFF);
+uint32_t timer_get_tick() {
+	return current_tick;
+}
 
-  outb(0x40, l);
-  outb(0x40, h);
+double timer_get_time() {
+	return current_tick*(1.0/TIMER_FREQ);
 }
