@@ -12,8 +12,6 @@
 #include <kernel/timer.h>
 #include <kernel/pmm.h>
 #include <kernel/paging.h>
-#include <kernel/keyboard.h>
-#include <kernel/syscall.h>
 
 extern uint32_t KERNEL_BEGIN_PHYS;
 extern uint32_t KERNEL_END_PHYS;
@@ -21,10 +19,23 @@ extern uint32_t KERNEL_SIZE;
 
 void kernel_main(multiboot* boot, uint32_t magic) {
 	init_term();
+	printf("Loading kernel...\n");
+	printf("Kernel loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
+		((uint32_t) &KERNEL_SIZE) >> 10);
 
+	assert(magic == MULTIBOOT_EAX_MAGIC);
+	assert(boot->flags & MULTIBOOT_FLAG_MMAP);
+
+	init_gdt();
+	init_idt();
+	init_irq();
+	init_timer();
+	init_pmm(boot);
+	init_paging();
 
 	term_change_bg_color(COLOR_DARK_GREY);
 	term_setcolor(COLOR_GREEN, COLOR_DARK_GREY);
+	printf("\n\n");
 	printf("8\"\"\"88 8\"\"\"\"8 8\"\"\"88 8\"\"\"\"8 \n");
 	printf("8    8 8    \" 8    8 8      \n");
 	printf("8    8 8e     8    8 8eeeee \n");
@@ -37,16 +48,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	term_setcolor(COLOR_LIGHT_GREY, COLOR_DARK_GREY);
 
 	printf(" -1.0 !\n\n");
-	printf("Kernel loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
-		((uint32_t) &KERNEL_SIZE) >> 10);
 
-	assert(magic == MULTIBOOT_EAX_MAGIC);
-	assert(boot->flags & MULTIBOOT_FLAG_MMAP);
-
-	init_gdt();
-	init_idt();
-	init_irq();
-	init_timer();
 
 	uint32_t time = 0;
 	while (1) {
