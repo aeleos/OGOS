@@ -12,6 +12,7 @@
 #include <kernel/timer.h>
 #include <kernel/pmm.h>
 #include <kernel/paging.h>
+#include <kernel/cpudetect.h>
 
 extern uint32_t KERNEL_BEGIN_PHYS;
 extern uint32_t KERNEL_END_PHYS;
@@ -48,7 +49,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	term_setcolor(COLOR_LIGHT_GREY, COLOR_DARK_GREY);
 
 	printf(" -1.0 !\n\n");
-
+	detect_cpu();
 
 	uint32_t time = 0;
 	while (1) {
