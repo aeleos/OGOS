@@ -28,6 +28,8 @@ typedef enum {
 } vga_color;
 
 void init_term();
+void term_menu_clear();
+int menu_printf(const char* __restrict, ...);
 void term_putchar_at(char c, size_t x, size_t y);
 void term_setcolor(vga_color fg, vga_color bg);
 void term_change_bg_color(vga_color bg);
