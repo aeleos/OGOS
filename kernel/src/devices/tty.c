@@ -11,8 +11,8 @@
 
 #define ENTRY(x, y) term_buffer[(y)*VGA_WIDTH+(x)]
 
-static uint32_t term_row;
-static uint32_t term_column;
+static int32_t term_row;
+static int32_t term_column;
 static uint8_t term_color;
 static uint8_t term_menu_color;
 static uint16_t* term_buffer;
@@ -146,7 +146,26 @@ void term_scrolldown() {
 }
 
 
-
+void term_arrow(uint8_t sc){
+	//printf("%X", sc);
+	uint8_t left = 0x4B;
+	uint8_t right = 0x4D;
+	uint8_t up = 0x48;
+	uint8_t down = 0x50;
+	if (sc == left)
+	{
+		term_set_cursor(term_row, term_column - 1);
+		if (term_column < 0){
+			term_set_cursor(term_row - 1, 78);
+		}
+	} else if (sc == right){
+		term_set_cursor(term_row, term_column + 1);
+	} else if (sc == up){
+		term_set_cursor(term_row - 1, term_column);
+	} else if (sc == down){
+		term_set_cursor(term_row + 1, term_column);
+	}
+}
 
 void term_putchar(char c) {
 	if (c == '\n' || c == '\r') {
@@ -157,8 +176,35 @@ void term_putchar(char c) {
 	else if (c == '\t') {
 		for (int i = 0; i < 4; i++) {
 			term_putchar_at(' ', term_column++, term_row);
+			move_cursor();
 		}
 	}
+	else if (c == '\b'){
+		term_set_cursor(term_row, term_column - 1);
+	 	if (term_column < 0){
+			term_set_cursor(term_row - 1, 78);
+		}
+		term_putchar_at(' ', term_column, term_row);
+	}
+	/*
+	else if (c == '\a'){
+		term_set_cursor(term_row, term_column - 1);
+		if (term_column < 0){
+			term_set_cursor(term_row - 1, 78);
+		}
+	}
+	else if (c == '\d'){
+		term_set_cursor(term_row, term_column + 1);
+	}
+	else if (c == '\w'){
+		term_set_cursor(term_row - 1, term_column);
+	}
+	else if (c == '\s'){
+		term_set_cursor(term_row + 1, term_column);
+	}
+	*/
+
+
 
 	if (term_column >= VGA_WIDTH) {
 		// term_row += 1;
@@ -191,19 +237,7 @@ void term_write_string(const char* data) {
 	term_write(data, strlen(data));
 }
 
-void term_menu_write(const char* data, uint32_t size){
-	term_menu_clear();
-	for (uint32_t i = 0; i < size; i++){
-		// if (term_interpret_ansi(c) || !isprint(c)) {
-		// 	return;
-		// }
-		ENTRY(i, 0) = term_make_entry(data[i], term_menu_color);
-	}
-}
 
-void term_menu_write_string(const char* data){
-	term_menu_write(data, strlen(data));
-}
 
 // Returns != 0 if in an ANSI sequence
 // ANSI escape sequence: \x1B[param;param2...end_char
@@ -357,85 +391,4 @@ int term_interpret_ansi(char c) {
 	}
 
 	return 1;
-}
-
-int menu_printf(const char* restrict format, ...)
-{
-	va_list parameters;
-	va_start(parameters, format);
-
-	int written = 0;
-	size_t amount;
-	bool rejected_bad_specifier = false;
-	char conversion_buf[128] = "";
-
-	while (*format != '\0') {
-		if (*format != '%') {
-		print_c:
-			amount = 1;
-			while (format[amount] && format[amount] != '%')
-				amount++;
-			term_menu_write(format, amount);
-			format += amount;
-			written += amount;
-			continue;
-		}
-
-		const char* format_begun_at = format;
-
-		if (*(++format) == '%')
-			goto print_c;
-
-		if (rejected_bad_specifier) {
-		incomprehensible_conversion:
-			rejected_bad_specifier = true;
-			format = format_begun_at;
-			goto print_c;
-		}
-
-		if (*format == 'c') {
-			format++;
-			char c = (char) va_arg(parameters, int /* char promotes to int */);
-			term_menu_write(&c, sizeof(c));
-		}
-		else if (*format == 's') {
-			format++;
-			const char* s = va_arg(parameters, const char*);
-			term_menu_write(s, strlen(s));
-		}
-		else if (*format == 'd') {
-			format++;
-			int i = va_arg(parameters, int);
-			const char* s = itoa(i, conversion_buf, 10);
-			term_menu_write(s, strlen(s));
-		}
-		else if (*format == 'x') {
-			format++;
-			int i = va_arg(parameters, int);
-			itoa(i, conversion_buf, 16);
-			term_menu_write(conversion_buf, strlen(conversion_buf));
-		}
-		else if (*format == 'X') {
-			format++;
-			int i = va_arg(parameters, int);
-			itoa(i, conversion_buf, 16);
-			for (size_t i = 0; i < strlen(conversion_buf); i++)
-				conversion_buf[i] = toupper(conversion_buf[i]);
-			term_menu_write(conversion_buf, strlen(conversion_buf));
-		}
-		else if (*format == 'b') {
-			// non standard
-			format++;
-			int i = va_arg(parameters, int);
-			itoa(i, conversion_buf, 2);
-			term_menu_write(conversion_buf, strlen(conversion_buf));
-		}
-		else {
-			goto incomprehensible_conversion;
-		}
-	}
-
-	va_end(parameters);
-
-	return written;
 }

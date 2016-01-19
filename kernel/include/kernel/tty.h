@@ -29,7 +29,7 @@ typedef enum {
 
 void init_term();
 void term_menu_clear();
-int menu_printf(const char* __restrict, ...);
+void move_cursor();
 void term_putchar_at(char c, size_t x, size_t y);
 void term_setcolor(vga_color fg, vga_color bg);
 void term_change_bg_color(vga_color bg);
@@ -39,5 +39,6 @@ void term_putchar(char c);
 void term_write(const char* data, size_t size);
 void term_writestring(const char* data);
 int term_interpret_ansi(char c);
+void term_arrow(uint8_t sc);
 
 #endif

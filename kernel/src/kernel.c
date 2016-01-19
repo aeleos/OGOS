@@ -14,6 +14,7 @@
 #include <kernel/paging.h>
 #include <kernel/cpudetect.h>
 #include <kernel/keyboard.h>
+#include <kernel/syscall.h>
 
 extern uint32_t KERNEL_BEGIN_PHYS;
 extern uint32_t KERNEL_END_PHYS;
@@ -35,6 +36,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_timer();
 	init_pmm(boot);
 	init_paging();
+	init_syscall();
 	init_keyboard();
 
 	term_change_bg_color(COLOR_DARK_GREY);
