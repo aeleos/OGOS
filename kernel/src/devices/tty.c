@@ -18,7 +18,6 @@ static uint8_t term_menu_color;
 static uint16_t* term_buffer;
 
 void move_cursor();
-void term_set_cursor(uint32_t row, uint32_t col);
 
 
 // Helper functions
@@ -55,14 +54,15 @@ void init_term() {
 	uint16_t entry = term_make_entry(' ', term_color);
 	term_buffer = (uint16_t*) VGA_MEMORY;
 	term_color = term_make_color(COLOR_WHITE, COLOR_BLACK);
-	term_set_cursor(1, 0);
+	term_set_cursor(0, 0);
 
 
 	for (uint32_t x = 0; x < VGA_WIDTH; x++) {
-		for (uint32_t y = 1; y < VGA_HEIGHT; y++) {
+		for (uint32_t y = 0; y < VGA_HEIGHT; y++) {
 			ENTRY(x, y) = entry;
 		}
 	}
+	term_set_cursor(1, 0);
 
 }
 

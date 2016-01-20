@@ -30,6 +30,7 @@ typedef enum {
 void init_term();
 void term_menu_clear();
 void move_cursor();
+void term_set_cursor(uint32_t row, uint32_t col);
 void term_putchar_at(char c, size_t x, size_t y);
 void term_setcolor(vga_color fg, vga_color bg);
 void term_change_bg_color(vga_color bg);

@@ -20,9 +20,13 @@ extern uint32_t KERNEL_BEGIN_PHYS;
 extern uint32_t KERNEL_END_PHYS;
 extern uint32_t KERNEL_SIZE;
 
+
+
+
 void kernel_main(multiboot* boot, uint32_t magic) {
 	term_menu_clear();
 	init_term();
+	term_set_cursor(0,0);
 	printf("Loading kernel...\n");
 	printf("Kernel loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
 		((uint32_t) &KERNEL_SIZE) >> 10);
@@ -38,7 +42,9 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_paging();
 	init_syscall();
 	init_keyboard();
-
+	//keyboard_wait_for_key(0x1C);
+	keyboard_wait_press();
+	init_term();
 	term_change_bg_color(COLOR_DARK_GREY);
 	printf("\x1B[1m\n\n");
 	term_setcolor(COLOR_GREEN, COLOR_DARK_GREY);

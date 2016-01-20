@@ -35,8 +35,10 @@ typedef struct {
 } key_event_t;
 
 void init_keyboard();
+void keyboard_wait_press();
 void keyboard_handler(registers_t* regs);
 void keyboard_wait();
+void keyboard_wait_for_key(uint8_t key);
 
 #define KEY_RELEASED (1 << 7)
 

@@ -104,8 +104,10 @@ char shift_sc_to_char[] = {
 };
 
 
-key_state_t keys_state[256];
-
+volatile key_state_t keys_state[256];
+volatile key_event_t key_event;
+uint8_t keys_waiting_for[256];
+uint8_t wait_for_key;
 void init_keyboard(){
   irq_register_handler(IRQ1, &keyboard_handler);
 }
@@ -113,9 +115,9 @@ void init_keyboard(){
 void keyboard_handler(registers_t* regs){
   UNUSED(regs);
 
-  key_event_t key_event;
   uint8_t scancode = inportb(KBD_DATA);
   uint8_t sc = scancode & 0x7F;
+
 
   if (scancode & KEY_RELEASED){
     keys_state[sc].pressed = 0;
@@ -125,6 +127,10 @@ void keyboard_handler(registers_t* regs){
     keys_state[sc].pressed = 1;
     key_event.pressed = 1;
   }
+
+	if (keys_waiting_for[sc] || keys_waiting_for){
+		return;
+	}
 
   key_event.key = sc;
   key_event.alt = keys_state[KEY_L_ALT].pressed;
@@ -149,6 +155,29 @@ void keyboard_handler(registers_t* regs){
   }
 	else {
 		term_arrow(scancode);
+	}
+}
+
+
+
+void keyboard_wait_for_key(uint8_t key){
+	keys_waiting_for[key] = 1;
+	while(1){
+		if (keys_state[key].pressed){
+			keys_waiting_for[key] = 0;
+			break;
+		}
+	}
+}
+
+void keyboard_wait_press(){
+	printf("Press any key to continue...\n");
+	wait_for_key = 1;
+	while(1){
+		if(key_event.pressed){
+			wait_for_key = 0;
+			break;
+		}
 	}
 }
 
