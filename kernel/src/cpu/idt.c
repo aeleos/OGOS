@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <kernel/idt.h>
 
@@ -47,6 +48,8 @@ void init_idt() {
 	idt_set_entry(48, (uint32_t) isr48, 0x08, 0x8E);
 
 	idt_load((uintptr_t) &idt_entry_ptr);
+	printf("[IDT] Initialized at 0x%X with a size of %dB\n", &idt_entries, idt_entry_ptr.limit);
+
 }
 
 void idt_set_entry(uint8_t num, uint32_t base, uint16_t selector, uint8_t flags) {

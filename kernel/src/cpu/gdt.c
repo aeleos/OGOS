@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <string.h>
-
+#include <stdio.h>
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
 
@@ -33,6 +33,7 @@ void init_gdt() {
 
 	asm("mov $0x2B, %ax\n"
 	    "ltr %ax\n");
+	printf("[GDT] Initialized at 0x%X with a size of %dB\n", &gdt_entries, gdt_ptr.limit);
 }
 
 void gdt_set_entry(uint32_t num, uint32_t base, uint32_t limit, uint8_t access, uint8_t granularity) {

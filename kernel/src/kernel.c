@@ -27,13 +27,14 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	term_menu_clear();
 	init_term();
 	term_set_cursor(0,0);
-	printf("Loading kernel...\n");
-	printf("Kernel loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
+
+	dump_multiboot_infos(boot);
+	printf("[Kernel] Loading kernel...\n");
+	printf("[Kernel] Loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
 		((uint32_t) &KERNEL_SIZE) >> 10);
 
 	assert(magic == MULTIBOOT_EAX_MAGIC);
 	assert(boot->flags & MULTIBOOT_FLAG_MMAP);
-
 	init_gdt();
 	init_idt();
 	init_irq();
@@ -42,7 +43,6 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_paging();
 	init_syscall();
 	init_keyboard();
-	//keyboard_wait_for_key(0x1C);
 	keyboard_wait_press();
 	init_term();
 	term_change_bg_color(COLOR_DARK_GREY);

@@ -128,7 +128,7 @@ void keyboard_handler(registers_t* regs){
     key_event.pressed = 1;
   }
 
-	if (keys_waiting_for[sc] || keys_waiting_for){
+	if (keys_waiting_for[sc] || wait_for_key){
 		return;
 	}
 
