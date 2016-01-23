@@ -27,9 +27,19 @@ typedef enum {
 	COLOR_WHITE,
 } vga_color;
 
+typedef struct {
+  uint16_t entry;
+  uint8_t c;
+  uint8_t color;
+  uint8_t color_fg;
+  uint8_t color_bg;
+} entry_struct_t;
+
+
 void init_term();
 void term_menu_clear();
 void move_cursor();
+void print_entry_info(int32_t x, int32_t);
 void term_set_cursor(uint32_t row, uint32_t col);
 void term_putchar_at(char c, size_t x, size_t y);
 void term_setcolor(vga_color fg, vga_color bg);

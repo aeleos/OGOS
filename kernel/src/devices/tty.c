@@ -49,6 +49,31 @@ static void term_set_fg_color(vga_color color) {
 	term_color = term_make_color(color, term_get_bg_color());
 }
 
+
+static uint16_t get_entry(int32_t x, int32_t y){
+	return (uint16_t)term_buffer[(y*VGA_WIDTH)+x];
+}
+
+static entry_struct_t get_entry_info(uint16_t entry16){
+	entry_struct_t entry_struct;
+	entry_struct.entry = entry16;
+	entry_struct.c = entry16 & 0xFF;
+	entry_struct.color  = entry16 >> 8;
+	entry_struct.color_fg = (entry16 >> 8) & 0x000F;
+	entry_struct.color_bg = (entry16 >> 8) >> 4;
+	return entry_struct;
+}
+
+void print_entry_info(int32_t x, int32_t y){
+	uint16_t entry = get_entry(x, y);
+	entry_struct_t entry_struct = get_entry_info(entry);
+	term_putchar(entry_struct.c);
+	printf("%X", entry_struct.color);
+	printf("%X", entry_struct.color_fg);
+	printf("%X", entry_struct.color_bg);
+	return;
+}
+
 // Terminal handling functions
 void init_term() {
 	uint16_t entry = term_make_entry(' ', term_color);

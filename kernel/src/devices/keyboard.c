@@ -7,180 +7,88 @@
 
 #include <kernel/tty.h>
 
-uint8_t keyboard_buffer[512];
-uint32_t buf_length;;
+void (*keyboard_handler)(uint8_t *buf, uint16_t size);
 
-/*
-char sc_to_char[] = {
-	0, 0,
-	'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-	'-', '=', '\b', '\t', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p',
-	'[', ']', '\r', 0, 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l',
-	';', '\'', '`', 0, '\\', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
-	',', '.', '/', 0, '*', 0, ' ',
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	'7', '8', '9', '-', '4', '5', '6', '+', '1', '2', '3', '0', '.',
-	0, 0, 0, 0, 0
-};
+// Keyboard map
+char USasciiNonShift[] = {
+0, ESC, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', BACKSPACE,
+TAB, 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', ENTER, 0,
+'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', '\'', '`', 0, '\\',
+'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, 0, 0, ' ', 0,
+KF1, KF2, KF3, KF4, KF5, KF6, KF7, KF8, KF9, KF10, 0, 0,
+KHOME, KUP, KPGUP,'-', KLEFT, '5', KRIGHT, '+', KEND, KDOWN, KPGDN, KINS, KDEL, 0, 0, 0, KF11, KF12 };
 
-*/
-char sc_to_char[] = {
-	0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
-	'9', '0', '-', '=', '\b',	/* Backspace */
-	'\t',			/* Tab */
-	'q', 'w', 'e', 'r',	/* 19 */
-	't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',	/* Enter key */
-	0,			/* 29   - Control */
-	'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	/* 39 */
-	'\'', '`',   0,		/* Left shift */
-	'\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
-	'm', ',', '.', '/',   0,				/* Right shift */
-	'*',
-	0,	/* Alt */
-	' ',	/* Space bar */
-	0,	/* Caps lock */
-	0,	/* 59 - F1 key ... > */
-	0,   0,   0,   0,   0,   0,   0,   0,
-	0,	/* < ... F10 */
-	0,	/* 69 - Num lock*/
-	0,	/* Scroll Lock */
-	0,	/* Home key */
-	0,	/* Up Arrow */
-	0,	/* Page Up */
-	'-',
-	0,	/* Left Arrow */
-	0,
-	0,	/* Right Arrow */
-	'+',
-	0,	/* 79 - End key*/
-	0,	/* Down Arrow */
-	0,	/* Page Down */
-	0,	/* Insert Key */
-	0,	/* Delete Key */
-	0,   0,   0,
-	0,	/* F11 Key */
-	0,	/* F12 Key */
-	0,	/* All other keys are undefined */
-};
+// Shifted scancodes to ASCII:
+char USasciiShift[] = {
+0, ESC, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', BACKSPACE,
+TAB, 'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', ENTER, 0,
+'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', '~', 0, '|',
+'Z', 'X', 'C', 'V', 'B', 'N', 'M', '<', '>', '?', 0, 0, 0, ' ', 0,
+KF1, KF2, KF3, KF4, KF5, KF6, KF7, KF8, KF9, KF10, 0, 0,
+KHOME, KUP, KPGUP, '-', KLEFT, '5', KRIGHT, '+', KEND, KDOWN, KPGDN, KINS, KDEL, 0, 0, 0, KF11, KF12 };
 
+uint8_t kb_buffer[KEYBOARD_BUFFER_SIZE];
+int last;
+int shift;
+char *ascii_s;
+char *ascii_S;
 
-char shift_sc_to_char[] = {
-	0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
-	'(', ')', '_', '+', '\b',	/* Backspace */
-	'\t',			/* Tab */
-	'Q', 'W', 'W', 'R',	/* 19 */
-	'T', 'Y', 'U', 'I', 'O', 'P', '{', '}', '\n',	/* Enter key */
-	0,			/* 29   - Control */
-	'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ':',	/* 39 */
-	'"', '~',   0,		/* Left shift */
-	'|', 'Z', 'X', 'C', 'V', 'B', 'N',			/* 49 */
-	'M', '<', '>', '?',   0,				/* Right shift */
-	'*',
-	0,	/* Alt */
-	' ',	/* Space bar */
-	0,	/* Caps lock */
-	0,	/* 59 - F1 key ... > */
-	0,   0,   0,   0,   0,   0,   0,   0,
-	0,	/* < ... F10 */
-	0,	/* 69 - Num lock*/
-	0,	/* Scroll Lock */
-	0,	/* Home key */
-	0,	/* Up Arrow */
-	0,	/* Page Up */
-	'-',
-	0,	/* Left Arrow */
-	0,
-	0,	/* Right Arrow */
-	'+',
-	0,	/* 79 - End key*/
-	0,	/* Down Arrow */
-	0,	/* Page Down */
-	0,	/* Insert Key */
-	0,	/* Delete Key */
-	0,   0,   0,
-	0,	/* F11 Key */
-	0,	/* F12 Key */
-	0,	/* All other keys are undefined */
-};
+extern void *stdin;
+extern uint32_t in_size;
 
+void init_keyboard()
+{
+    in_size = 0;
 
-volatile key_state_t keys_state[256];
-volatile key_event_t key_event;
-uint8_t keys_waiting_for[256];
-uint8_t wait_for_key;
-void init_keyboard(){
-  irq_register_handler(IRQ1, &keyboard_handler);
+    ascii_s = USasciiNonShift;
+    ascii_S = USasciiShift;
+    last = 0;
+
+    keyboard_set_handler(&read_kb_buff);
+    irq_register_handler(IRQ1, &keyboard_interrupt_handler);
 }
 
-void keyboard_handler(registers_t* regs){
-  UNUSED(regs);
-
-  uint8_t scancode = inportb(KBD_DATA);
-  uint8_t sc = scancode & 0x7F;
-
-
-  if (scancode & KEY_RELEASED){
-    keys_state[sc].pressed = 0;
-    key_event.pressed = 0;
-  }
-  else {
-    keys_state[sc].pressed = 1;
-    key_event.pressed = 1;
-  }
-
-	if (keys_waiting_for[sc] || wait_for_key){
-		return;
-	}
-
-  key_event.key = sc;
-  key_event.alt = keys_state[KEY_L_ALT].pressed;
-  key_event.alt_gr = 0;
-  key_event.shift = keys_state[KEY_L_SHIFT].pressed ||
-					  keys_state[KEY_R_SHIFT].pressed;
-  key_event.super = keys_state[KEY_SUPER].pressed;
-  key_event.control = keys_state[KEY_L_CTRL].pressed;
-
-  if (sc_to_char[scancode]) {
-		if (key_event.shift){
-			printf("%c", shift_sc_to_char[sc]);
-		}
-		else {
-			printf("%c", sc_to_char[sc]);
-		}
-		/*,key_event.alt ? "Alt" : "",
-    key_event.shift ? "Shift" : "",
-    key_event.control ? "Control" : "",
-    key_event.super ? "Super" : ""*/
-
-  }
-	else {
-		term_arrow(scancode);
-	}
+void keyboard_set_handler(void (*callback)(uint8_t *buf, uint16_t size))
+{
+    keyboard_handler = callback;
 }
 
+void keyboard_interrupt_handler(__attribute__ ((unused)) registers_t *regs)
+{
+    CLI();
+    uint8_t scancode = inportb(0x60);
+    int special = 0;
 
+    if (scancode & 0x80) {
+        scancode &= 0x7F;
+        if (scancode == KRLEFT_SHIFT || scancode == KRRIGHT_SHIFT) {
+            shift = 0;
+            special = 1;
+        }
+    } else {
+        if (scancode == KRLEFT_SHIFT || scancode == KRRIGHT_SHIFT) {
+            shift = 1;
+            special = 1;
+        }
 
-void keyboard_wait_for_key(uint8_t key){
-	keys_waiting_for[key] = 1;
-	while(1){
-		if (keys_state[key].pressed){
-			keys_waiting_for[key] = 0;
-			break;
-		}
-	}
+        if (shift) {
+            kb_buffer[last++] = ascii_S[scancode];
+        } else {
+            kb_buffer[last++] = ascii_s[scancode];
+        }
+
+        if (special != 1) {
+            keyboard_handler(kb_buffer, last);
+        }
+
+        if (last == KEYBOARD_BUFFER_SIZE) {
+            last = 0;
+        }
+    }
+    STI();
 }
 
-void keyboard_wait_press(){
-	printf("Press any key to continue...\n");
-	wait_for_key = 1;
-	while(1){
-		if(key_event.pressed){
-			wait_for_key = 0;
-			break;
-		}
-	}
-}
-
-void keyboard_wait() {
-	while (inportb(KBD_STATUS) & (1 << 1));
+void read_kb_buff(uint8_t *buf, uint16_t size)
+{
+    ((uint8_t*) stdin)[in_size] = buf[size - 1];
 }

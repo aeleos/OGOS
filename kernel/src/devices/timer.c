@@ -4,14 +4,21 @@
 #include <kernel/irq.h>
 #include <kernel/com.h>
 #include <kernel/sys.h>
+#include <kernel/time.h>
 
 // Globals are always initialized to 0
-static uint32_t current_tick;
+int tick;
+extern volatile int in_size;
 
 void timer_callback(registers_t* regs) {
 	UNUSED(regs);
-
-	current_tick++;
+	CLI();
+	update_time();
+	tick++;
+	if (in_size >= STDIO_SIZE) {
+			in_size = 0;
+	}
+	STI();
 }
 
 void init_timer() {
@@ -28,9 +35,9 @@ void init_timer() {
 
 
 uint32_t timer_get_tick() {
-	return current_tick;
+	return tick;
 }
 
 double timer_get_time() {
-	return current_tick*(1.0/TIMER_FREQ);
+	return tick*(1.0/TIMER_FREQ);
 }

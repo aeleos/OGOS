@@ -15,12 +15,18 @@
 #include <kernel/cpudetect.h>
 #include <kernel/keyboard.h>
 #include <kernel/syscall.h>
+#include <kernel/time.h>
+#include <kernel/shell.h>
 
 extern uint32_t KERNEL_BEGIN_PHYS;
 extern uint32_t KERNEL_END_PHYS;
 extern uint32_t KERNEL_SIZE;
-
-
+void* stdin;
+volatile int in_size;
+uint8_t inbuffer[STDIO_SIZE];
+void main_loop();
+char user[20];
+char machine[30];
 
 
 void kernel_main(multiboot* boot, uint32_t magic) {
@@ -43,7 +49,8 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_paging();
 	init_syscall();
 	init_keyboard();
-	keyboard_wait_press();
+	//keyboard_wait_press();
+
 	init_term();
 	term_change_bg_color(COLOR_DARK_GREY);
 	printf("\x1B[1m\n\n");
@@ -58,19 +65,32 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	printf("Welcome to \x1B[1m\x1B[36mOGOS\x1B[2m");
 
 	printf(" -1.0 !\n\n");
-	detect_cpu();
-	uint32_t time = 0;
-	while (1) {
-		uint32_t ntime = (uint32_t) timer_get_time();
-		if (ntime > time) {
-			time = ntime;
-			printf("\x1B[s\x1B[0;75H"); // save & move cursor
-			printf("\x1B[1K");            // Clear line
-			printf("\x1B[3m\x1B[37m\x1B[40m%ds", time);
-			printf("\x1B[4m\x1B[u");            // Restore cursor
-			move_cursor();
-		}
-	}
 
+	stdin = (uint8_t*) inbuffer;
+
+	for (int i = 0; i < STDIO_SIZE; i++) {
+			inbuffer[i] = 0;
+	}
+	//detect_cpu();
+	//print_entry_info(0,9);
+	printf("Username: ");
+	gets(user);
+	printf("Machine: ");
+	gets(machine);
+	//printf("%s", user);
+	main_loop();
+}
+void main_loop(){
+	char cmd[1024];
+	while (true) {
+		memset(cmd, 0, 1023);
+		printf("%s@%s:$ ", user, machine);
+		gets(cmd);
+		if (cmd[0] != 0) {
+			if(shell(cmd)) {
+					printf("Command '%s' not found.\n", cmd);
+			}
+		}
+}
 
 }
