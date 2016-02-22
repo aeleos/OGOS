@@ -2,9 +2,7 @@
 #define IRQ_H
 
 #include <kernel/isr.h> // For registers_t. Will move
-
-#define CLI() asm volatile("cli")
-#define STI() asm volatile("sti")
+#include <kernel/system.h>
 
 typedef void (*handler_t)(registers_t*);
 

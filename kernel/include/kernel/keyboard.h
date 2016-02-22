@@ -65,12 +65,14 @@
 #define KRNUM_LOCK 0x45
 #define KRDEL 0x53
 
-                                                  /* Functions. */
-
+/**
+  * Install the stdin .
+  */                                                /* Functions. */
+void init_keyboard();
 /**
   * Install the keyboard driver.
   */
-void install_keyboard();
+void init_keyboard();
 
 /**
   * Set handler of keyboard.

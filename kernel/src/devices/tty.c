@@ -91,6 +91,12 @@ void init_term() {
 
 }
 
+void term_clear(){
+	init_term();
+	term_change_bg_color(COLOR_DARK_GREY);
+	term_menu_clear();
+}
+
 void term_set_cursor(uint32_t row, uint32_t col){
 	term_row = row;
 	term_column = col;

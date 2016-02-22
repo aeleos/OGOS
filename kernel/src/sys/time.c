@@ -46,3 +46,14 @@ void update_time(){
     move_cursor();
   }
 }
+
+void print_time()
+{
+	printf("Time: %d:%d:%d:%d ", hours, minutes, seconds, mseconds);
+	if (hours < 12) {
+		printf("am");
+	} else {
+		printf("pm");
+	}
+	printf("\n");
+}

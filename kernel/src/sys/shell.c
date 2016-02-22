@@ -2,14 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <kernel/shell.h>
+#include <kernel/time.h>
+#include <kernel/tty.h>
+#include <kernel/system.h>
 
 extern int detect_cpu();
 
 void cmd_help(){
   printf("""Help:\n \
--> hw - print hardware info\n \
+-> cpu - print cpu info\n \
 -> time - display the time\n \
--> free - display info about memory\n \
 -> clear - clear screen\n \
 -> reboot - reboot the PC\n \
 """);
@@ -19,13 +21,33 @@ void cmd_cpu(){
   detect_cpu();
 }
 
+void cmd_time(){
+  print_time();
+}
 
-int cmd_limit = 3;
+void cmd_clear()
+{
+    term_clear();
+}
+
+void cmd_reboot()
+{
+    term_clear();
+    printf("System will go down and reboot...\n");
+    reboot();
+}
+
+
+int cmd_limit = 5;
 
 shell_cmd_t cmd_table[] = {
     {"help",  cmd_help},
     {"cpu",    cmd_cpu},
+    {"time",  cmd_time},
+    {"clear",  cmd_clear},
+    {"reboot",  cmd_reboot},
     //{"time",  cmd_time},
+
 };
 
 int shell(char *cmd)

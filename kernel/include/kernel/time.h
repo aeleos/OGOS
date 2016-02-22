@@ -11,4 +11,6 @@ void init_time();
 
 void update_time();
 
+void print_time();
+
 #endif

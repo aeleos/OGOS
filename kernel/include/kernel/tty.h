@@ -37,6 +37,7 @@ typedef struct {
 
 
 void init_term();
+void term_clear();
 void term_menu_clear();
 void move_cursor();
 void print_entry_info(int32_t x, int32_t);

@@ -49,10 +49,11 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_paging();
 	init_syscall();
 	init_keyboard();
+	init_stdin();
+	printf("Press any key to continue...");
+	getch();
 	//keyboard_wait_press();
-
-	init_term();
-	term_change_bg_color(COLOR_DARK_GREY);
+	term_clear();
 	printf("\x1B[1m\n\n");
 	term_setcolor(COLOR_GREEN, COLOR_DARK_GREY);
 	printf("8\"\"\"88 8\"\"\"\"8 8\"\"\"88 8\"\"\"\"8 \n");
@@ -66,11 +67,6 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 
 	printf(" -1.0 !\n\n");
 
-	stdin = (uint8_t*) inbuffer;
-
-	for (int i = 0; i < STDIO_SIZE; i++) {
-			inbuffer[i] = 0;
-	}
 	//detect_cpu();
 	//print_entry_info(0,9);
 	printf("Username: ");
