@@ -89,4 +89,6 @@ void keyboard_interrupt_handler(__attribute__ ((unused)) registers_t *regs);
   */
 void read_kb_buff(uint8_t *buf, uint16_t size);
 
+void init_stdin();
+
 #endif

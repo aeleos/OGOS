@@ -34,7 +34,6 @@ void irq12();
 void irq13();
 void irq14();
 void irq15();
-
 #define PIC1_CMD    0x20
 #define PIC1_DATA   0x21
 #define PIC1        PIC1_CMD

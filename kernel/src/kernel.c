@@ -9,7 +9,6 @@
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
 #include <kernel/irq.h>
-#include <kernel/timer.h>
 #include <kernel/pmm.h>
 #include <kernel/paging.h>
 #include <kernel/cpudetect.h>
@@ -17,6 +16,49 @@
 #include <kernel/syscall.h>
 #include <kernel/time.h>
 #include <kernel/shell.h>
+#include <kernel/com.h>
+#define TIMER_IRQ IRQ0
+#define TIMER_FREQ 1000 // in Hz
+#define TIMER_QUOTIENT 1193180
+
+#define PIT_0 0x40
+#define PIT_1 0x41
+#define PIT_2 0x42
+#define PIT_CMD 0x43
+#define PIT_SET 0x36
+
+
+int tick;
+extern volatile int in_size;
+
+void timer_callback(registers_t* regs) {
+	CLI();
+	tick++;
+	if (in_size >= STDIO_SIZE) {
+			in_size = 0;
+	}
+	STI();
+}
+
+void init_timer() {
+	irq_register_handler(IRQ0, &timer_callback);
+
+	uint32_t divisor = TIMER_QUOTIENT / TIMER_FREQ;
+
+	outportb(PIT_CMD, PIT_SET);
+	outportb(PIT_0, divisor & 0xFF);
+	outportb(PIT_0, (divisor >> 8) & 0xFF);
+
+}
+
+
+
+uint32_t timer_get_tick() {
+	return tick;
+}
+
+
+
 
 extern uint32_t KERNEL_BEGIN_PHYS;
 extern uint32_t KERNEL_END_PHYS;
@@ -44,15 +86,17 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_gdt();
 	init_idt();
 	init_irq();
-	init_timer();
+
 	init_pmm(boot);
 	init_paging();
 	init_syscall();
 	init_keyboard();
 	init_stdin();
+
+	init_timer();
+
 	printf("Press any key to continue...");
 	getch();
-	//keyboard_wait_press();
 	term_clear();
 	printf("\x1B[1m\n\n");
 	term_setcolor(COLOR_GREEN, COLOR_DARK_GREY);
@@ -66,7 +110,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	printf("Welcome to \x1B[1m\x1B[36mOGOS\x1B[2m");
 
 	printf(" -1.0 !\n\n");
-
+	time_install();
 	//detect_cpu();
 	//print_entry_info(0,9);
 	printf("Username: ");
@@ -75,6 +119,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	gets(machine);
 	//printf("%s", user);
 	main_loop();
+
 }
 void main_loop(){
 	char cmd[1024];

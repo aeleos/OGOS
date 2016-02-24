@@ -94,21 +94,16 @@ void irq_register_handler(uint8_t irq, handler_t handler) {
 }
 
 void irq_remap() {
-	outportb(PIC1_CMD, PIC_RESTART);
-	outportb(PIC2_CMD, PIC_RESTART);
-
-	// Remap the vector offset to 32, so that IRQs are called with
-	// numbers within 32-47.
-	outportb(PIC1_DATA, IRQ0);
-	outportb(PIC2_DATA, IRQ8);
-
-	// Setup cascading
-	outportb(PIC1_DATA, 4);
-	outportb(PIC2_DATA, 2);
-
-	// Finish the setup?
-	outportb(PIC1_DATA, 1);
-	outportb(PIC2_DATA, 1);
+	outportb(0x20, 0x11);
+	outportb(0xA0, 0x11);
+	outportb(0x21, 0x20);
+	outportb(0xA1, 0x28);
+	outportb(0x21, 0x04);
+	outportb(0xA1, 0x02);
+	outportb(0x21, 0x01);
+	outportb(0xA1, 0x01);
+	outportb(0x21, 0x0);
+	outportb(0xA1, 0x0);
 }
 
 uint16_t irq_get_isr() {

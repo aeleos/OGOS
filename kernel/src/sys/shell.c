@@ -21,9 +21,6 @@ void cmd_cpu(){
   detect_cpu();
 }
 
-void cmd_time(){
-  print_time();
-}
 
 void cmd_clear()
 {
@@ -38,12 +35,11 @@ void cmd_reboot()
 }
 
 
-int cmd_limit = 5;
+int cmd_limit = 4;
 
 shell_cmd_t cmd_table[] = {
     {"help",  cmd_help},
     {"cpu",    cmd_cpu},
-    {"time",  cmd_time},
     {"clear",  cmd_clear},
     {"reboot",  cmd_reboot},
     //{"time",  cmd_time},
