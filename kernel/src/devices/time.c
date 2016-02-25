@@ -127,8 +127,28 @@ static void rtc_handler(registers_t* regs) {
 	//printf("+1 second... %02u. %02u. %llu, %02u:%02u:%02u\n", dat.day, dat.month,
 	//			(unsigned long long) dat.year, dat.hour, dat.min, dat.sec);
 		printf("\x1B[s\x1B[0;60H"); // save & move cursor
-  	printf("\x1B[1K");            // Clear line
-	  printf("\x1B[3m\x1B[37m\x1B[40m%d-%d-2016  %d:%d:%d\n", dat.month, dat.day, dat.hour, dat.min, dat.sec);
+  	printf("\x1B[1K");
+
+	  printf("\x1B[3m\x1B[37m\x1B[40m%d-%d-%d  ", dat.month, dat.day, (unsigned long long)dat.year);
+
+
+    if (dat.hour < 10){
+      printf("0");
+    }
+      printf("%d:", dat.hour);
+
+    if (dat.min < 10){
+      printf("0");
+    }
+    printf("%d:", dat.min);
+
+
+    if (dat.sec < 10) {
+      printf("0");
+    }
+    printf("%d", dat.sec);
+
+
 	  printf("\x1B[4m\x1B[u");            // Restore cursor
     move_cursor();
 	}
