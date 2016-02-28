@@ -22,6 +22,11 @@ OBJS+=$(patsubst %.S,%.o,$(wildcard src/*/*/*.S))
 OBJS+=$(patsubst %.S,%.o,$(wildcard src/*/*.S))
 OBJS+=$(patsubst %.S,%.o,$(wildcard src/*.S))
 
+OBJS+=$(patsubst %.asm,%.o,$(wildcard src/*/*/*.asm))
+OBJS+=$(patsubst %.asm,%.o,$(wildcard src/*/*.asm))
+OBJS+=$(patsubst %.asm,%.o,$(wildcard src/*.asm))
+
+
 all: OGOS.kernel
 
 .PHONY: all clean install install-headers install-kernel
@@ -34,6 +39,10 @@ OGOS.kernel: $(OBJS) linker.ld
 
 %.o: %.S
 	$(CC) -c $< -o $@ $(CFLAGS) $(CPPFLAGS)
+
+%.o: %.asm
+	nasm -f elf $< -o $@
+
 
 clean:
 	rm -f OGOS.kernel $(OBJS) *.o */*.o */*/*.o
