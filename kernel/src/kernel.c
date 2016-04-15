@@ -13,9 +13,9 @@ char machine[30];
 
 
 void kernel_main(multiboot* boot, uint32_t magic) {
-	term_menu_clear();
-	init_term();
-	term_set_cursor(0,0);
+	tty_menu_clear();
+	tty_init();
+	tty_set_cursor(0,0);
 
 	dump_multiboot_infos(boot);
 	printf("[Kernel] Loading kernel...\n");
@@ -39,9 +39,9 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 
 	printf("Press any key to continue...");
 	getch();
-	term_clear();
+	tty_clear();
 	printf("\x1B[1m\n\n");
-	term_setcolor(COLOR_GREEN, COLOR_DARK_GREY);
+	tty_setcolor(COLOR_GREEN, COLOR_DARK_GREY);
 	printf("8\"\"\"88 8\"\"\"\"8 8\"\"\"88 8\"\"\"\"8 \n");
 	printf("8    8 8    \" 8    8 8      \n");
 	printf("8    8 8e     8    8 8eeeee \n");

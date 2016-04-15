@@ -150,7 +150,7 @@ static void rtc_handler(registers_t* regs) {
 
 
 	  printf("\x1B[4m\x1B[u");            // Restore cursor
-    move_cursor();
+    tty_move_cursor();
 	}
 
 

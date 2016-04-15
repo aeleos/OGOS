@@ -24,12 +24,12 @@ void cmd_cpu(){
 
 void cmd_clear()
 {
-    term_clear();
+    tty_clear();
 }
 
 void cmd_reboot()
 {
-    term_clear();
+    tty_clear();
     printf("System will go down and reboot...\n");
     reboot();
 }

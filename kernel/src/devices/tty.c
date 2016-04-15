@@ -9,49 +9,48 @@
 #include <kernel/tty.h>
 #include <kernel/com.h>
 
-#define ENTRY(x, y) term_buffer[(y)*VGA_WIDTH+(x)]
+#define ENTRY(x, y) tty_buffer[(y)*VGA_WIDTH+(x)]
 
-static int32_t term_row;
-static int32_t term_column;
-static uint8_t term_color;
-static uint8_t term_menu_color;
-static uint16_t* term_buffer;
+static int32_t tty_row;
+static int32_t tty_column;
+static uint8_t tty_color;
+static uint8_t tty_menu_color;
+static uint16_t* tty_buffer;
 
-void move_cursor();
 
 
 // Helper functions
-static uint8_t term_make_color(vga_color fg, vga_color bg) {
+static uint8_t tty_make_color(vga_color fg, vga_color bg) {
 	return fg | bg << 4;
 }
 
 // Entry format: [ BLINK BG BG BG FG FG FG FG | C C C C C C C C ]
 //               [           8-bits           |      8-bits     ]
-static uint16_t term_make_entry(char c, uint8_t color) {
+static uint16_t tty_make_entry(char c, uint8_t color) {
 	uint16_t c16 = c;
 	uint16_t color16 = color;
 	return c16 | color16 << 8;
 }
 
-static uint8_t term_get_fg_color() {
-	return term_color & 0x000F;
+static uint8_t tty_get_fg_color() {
+	return tty_color & 0x000F;
 }
 
-static uint8_t term_get_bg_color() {
-	return term_color >> 4;
+static uint8_t tty_get_bg_color() {
+	return tty_color >> 4;
 }
 
-static void term_set_bg_color(vga_color color) {
-	term_color = term_make_color(term_get_fg_color(), color);
+static void tty_set_bg_color(vga_color color) {
+	tty_color = tty_make_color(tty_get_fg_color(), color);
 }
 
-static void term_set_fg_color(vga_color color) {
-	term_color = term_make_color(color, term_get_bg_color());
+static void tty_set_fg_color(vga_color color) {
+	tty_color = tty_make_color(color, tty_get_bg_color());
 }
 
 
 static uint16_t get_entry(int32_t x, int32_t y){
-	return (uint16_t)term_buffer[(y*VGA_WIDTH)+x];
+	return (uint16_t)tty_buffer[(y*VGA_WIDTH)+x];
 }
 
 static entry_struct_t get_entry_info(uint16_t entry16){
@@ -64,22 +63,22 @@ static entry_struct_t get_entry_info(uint16_t entry16){
 	return entry_struct;
 }
 
-void print_entry_info(int32_t x, int32_t y){
+void tty_print_entry_info(int32_t x, int32_t y){
 	uint16_t entry = get_entry(x, y);
 	entry_struct_t entry_struct = get_entry_info(entry);
-	term_putchar(entry_struct.c);
+	tty_putchar(entry_struct.c);
 	printf("%X", entry_struct.color);
 	printf("%X", entry_struct.color_fg);
 	printf("%X", entry_struct.color_bg);
 	return;
 }
 
-// Terminal handling functions
-void init_term() {
-	uint16_t entry = term_make_entry(' ', term_color);
-	term_buffer = (uint16_t*) VGA_MEMORY;
-	term_color = term_make_color(COLOR_WHITE, COLOR_BLACK);
-	term_set_cursor(0, 0);
+// ttyinal handling functions
+void tty_init() {
+	uint16_t entry = tty_make_entry(' ', tty_color);
+	tty_buffer = (uint16_t*) VGA_MEMORY;
+	tty_color = tty_make_color(COLOR_WHITE, COLOR_BLACK);
+	tty_set_cursor(0, 0);
 
 
 	for (uint32_t x = 0; x < VGA_WIDTH; x++) {
@@ -87,62 +86,62 @@ void init_term() {
 			ENTRY(x, y) = entry;
 		}
 	}
-	term_set_cursor(1, 0);
+	tty_set_cursor(1, 0);
 
 }
 
-void term_clear(){
-	init_term();
-	term_change_bg_color(COLOR_DARK_GREY);
-	term_menu_clear();
+void tty_clear(){
+	tty_init();
+	tty_change_bg_color(COLOR_DARK_GREY);
+	tty_menu_clear();
 }
 
-void term_set_cursor(uint32_t row, uint32_t col){
-	term_row = row;
-	term_column = col;
-	move_cursor();
+void tty_set_cursor(uint32_t row, uint32_t col){
+	tty_row = row;
+	tty_column = col;
+	tty_move_cursor();
 }
 
-void term_menu_clear(){
-	term_menu_color = term_make_color(COLOR_WHITE, COLOR_BLACK);
-	uint16_t menu_entry = term_make_entry(' ', term_menu_color);
+void tty_menu_clear(){
+	tty_menu_color = tty_make_color(COLOR_WHITE, COLOR_BLACK);
+	uint16_t menu_entry = tty_make_entry(' ', tty_menu_color);
 	for (uint32_t x = 0; x < VGA_WIDTH; x++){
 		ENTRY (x, 0) = menu_entry;
 	}
 }
 
-void term_setcolor(vga_color fg, vga_color bg) {
-	term_color = term_make_color(fg, bg);
+void tty_setcolor(vga_color fg, vga_color bg) {
+	tty_color = tty_make_color(fg, bg);
 }
 
-void term_change_bg_color(vga_color bg) {
+void tty_change_bg_color(vga_color bg) {
 	for (uint32_t x = 0; x < VGA_WIDTH; x++) {
 		for (uint32_t y = 1; y < VGA_HEIGHT; y++) {
 			uint16_t entry = ENTRY(x, y);
 			char c = entry & 0xFF;
 			vga_color fg = (entry & 0x0F00) >> 8;
-			ENTRY(x, y) = term_make_entry(c, term_make_color(fg, bg));
+			ENTRY(x, y) = tty_make_entry(c, tty_make_color(fg, bg));
 		}
 	}
 
-	term_set_bg_color(bg);
+	tty_set_bg_color(bg);
 }
 
-void term_set_blink(int blink) {
+void tty_set_blink(int blink) {
 	if (blink) {
-		term_color |= (1 << 7);
+		tty_color |= (1 << 7);
 	}
 	else {
-		term_color &= ~(1 << 7);
+		tty_color &= ~(1 << 7);
 	}
 }
 
 
 
-void move_cursor()
+void tty_move_cursor()
 {
    // The screen is 80 characters wide...
-	const size_t index = term_row * VGA_WIDTH + term_column;
+	const size_t index = tty_row * VGA_WIDTH + tty_column;
 
 	 // cursor LOW port to vga INDEX register
 	outportb(0x3D4, 14); // Tell the VGA board we are setting the high cursor byte.
@@ -153,31 +152,31 @@ void move_cursor()
 
 }
 
-void term_putchar_at(char c, uint32_t x, uint32_t y) {
+void tty_putchar_at(char c, uint32_t x, uint32_t y) {
 	if (y >= VGA_HEIGHT || x >= VGA_WIDTH) {
 		return;
 	}
 
-	ENTRY(x, y) = term_make_entry(c, term_color);
+	ENTRY(x, y) = tty_make_entry(c, tty_color);
 }
 
-void term_scrolldown() {
+void tty_scrolldown() {
 	for (uint32_t y = 1; y < VGA_HEIGHT; y++) {
 		for (uint32_t x = 0; x < VGA_WIDTH; x++) {
 			if (y < VGA_HEIGHT-1) {
 				ENTRY(x, y) = ENTRY(x, y+1);
 			}
 			else { // last line
-				ENTRY(x, y) = term_make_entry(' ', term_color);
+				ENTRY(x, y) = tty_make_entry(' ', tty_color);
 			}
 		}
 	}
-	term_set_cursor(term_row - 1, term_column);
-	//term_row--;
+	tty_set_cursor(tty_row - 1, tty_column);
+	//tty_row--;
 }
 
 
-void term_arrow(uint8_t sc){
+void tty_arrow(uint8_t sc){
 	//printf("%X", sc);
 	uint8_t left = 0x4B;
 	uint8_t right = 0x4D;
@@ -185,94 +184,94 @@ void term_arrow(uint8_t sc){
 	uint8_t down = 0x50;
 	if (sc == left)
 	{
-		term_set_cursor(term_row, term_column - 1);
-		if (term_column < 0){
-			term_set_cursor(term_row - 1, 78);
+		tty_set_cursor(tty_row, tty_column - 1);
+		if (tty_column < 0){
+			tty_set_cursor(tty_row - 1, 78);
 		}
 	} else if (sc == right){
-		term_set_cursor(term_row, term_column + 1);
+		tty_set_cursor(tty_row, tty_column + 1);
 	} else if (sc == up){
-		term_set_cursor(term_row - 1, term_column);
+		tty_set_cursor(tty_row - 1, tty_column);
 	} else if (sc == down){
-		term_set_cursor(term_row + 1, term_column);
+		tty_set_cursor(tty_row + 1, tty_column);
 	}
 }
 
-void term_putchar(char c) {
+void tty_putchar(char c) {
 	if (c == '\n' || c == '\r') {
-		// term_row += 1;
-		// term_column = 0;
-		term_set_cursor(term_row + 1, 0);
+		// tty_row += 1;
+		// tty_column = 0;
+		tty_set_cursor(tty_row + 1, 0);
 	}
 	else if (c == '\t') {
 		for (int i = 0; i < 4; i++) {
-			term_putchar_at(' ', term_column++, term_row);
-			move_cursor();
+			tty_putchar_at(' ', tty_column++, tty_row);
+			tty_move_cursor();
 		}
 	}
 	else if (c == '\b'){
-		term_set_cursor(term_row, term_column - 1);
-	 	if (term_column < 0){
-			term_set_cursor(term_row - 1, 78);
+		tty_set_cursor(tty_row, tty_column - 1);
+	 	if (tty_column < 0){
+			tty_set_cursor(tty_row - 1, 78);
 		}
-		term_putchar_at(' ', term_column, term_row);
+		tty_putchar_at(' ', tty_column, tty_row);
 	}
 	/*
 	else if (c == '\a'){
-		term_set_cursor(term_row, term_column - 1);
-		if (term_column < 0){
-			term_set_cursor(term_row - 1, 78);
+		tty_set_cursor(tty_row, tty_column - 1);
+		if (tty_column < 0){
+			tty_set_cursor(tty_row - 1, 78);
 		}
 	}
 	else if (c == '\d'){
-		term_set_cursor(term_row, term_column + 1);
+		tty_set_cursor(tty_row, tty_column + 1);
 	}
 	else if (c == '\w'){
-		term_set_cursor(term_row - 1, term_column);
+		tty_set_cursor(tty_row - 1, tty_column);
 	}
 	else if (c == '\s'){
-		term_set_cursor(term_row + 1, term_column);
+		tty_set_cursor(tty_row + 1, tty_column);
 	}
 	*/
 
 
 
-	if (term_column >= VGA_WIDTH) {
-		// term_row += 1;
-		// term_column = 0;
-		term_set_cursor(term_row + 1, 0);
+	if (tty_column >= VGA_WIDTH) {
+		// tty_row += 1;
+		// tty_column = 0;
+		tty_set_cursor(tty_row + 1, 0);
 
 	}
 
-	if (term_row >= VGA_HEIGHT) {
-		term_scrolldown();
+	if (tty_row >= VGA_HEIGHT) {
+		tty_scrolldown();
 	}
 
-	if (term_interpret_ansi(c) || !isprint(c)) {
+	if (tty_interpret_ansi(c) || !isprint(c)) {
 		return;
 	}
 
-	term_putchar_at(c, term_column++, term_row);
-	move_cursor();
+	tty_putchar_at(c, tty_column++, tty_row);
+	tty_move_cursor();
 }
 
-void term_write(const char* data, uint32_t size) {
+void tty_write(const char* data, uint32_t size) {
 	for (uint32_t i = 0; i < size; i++) {
-		term_putchar(data[i]);
+		tty_putchar(data[i]);
 	}
 }
 
 
 
-void term_write_string(const char* data) {
-	term_write(data, strlen(data));
+void tty_write_string(const char* data) {
+	tty_write(data, strlen(data));
 }
 
 
 
 // Returns != 0 if in an ANSI sequence
 // ANSI escape sequence: \x1B[param;param2...end_char
-int term_interpret_ansi(char c) {
+int tty_interpret_ansi(char c) {
 	typedef enum {
 		normal, bracket, params
 	} state_t;
@@ -327,41 +326,41 @@ int term_interpret_ansi(char c) {
 
 			switch (c) {
 				case 's': // Save cursor position
-					saved_row = term_row;
-					saved_col = term_column;
+					saved_row = tty_row;
+					saved_col = tty_column;
 					state = normal;
 					break;
 				case 'u': // Restore cursor position
-					term_row = saved_row;
-					term_column = saved_col;
+					tty_row = saved_row;
+					tty_column = saved_col;
 					state = normal;
 					break;
 				case 'K': // Erase until the end of line
-					for (uint32_t x = term_column; x < VGA_WIDTH; x++) {
+					for (uint32_t x = tty_column; x < VGA_WIDTH; x++) {
 						if (args[0]){
-							ENTRY(x, term_row) = term_make_entry(' ', term_menu_color);
+							ENTRY(x, tty_row) = tty_make_entry(' ', tty_menu_color);
 						} else {
-							ENTRY(x, term_row) = term_make_entry(' ', term_color);
+							ENTRY(x, tty_row) = tty_make_entry(' ', tty_color);
 						}
 					}
 					state = normal;
 					break;
 				case 'H': // Set cursor position
 				case 'f':
-					term_row = args[0];
-					term_column = args[1];
+					tty_row = args[0];
+					tty_column = args[1];
 					break;
 				case 'A': // Cursor up
-					term_row -= args[0]; break;
+					tty_row -= args[0]; break;
 				case 'B': // Cursor down
-					term_row += args[0]; break;
+					tty_row += args[0]; break;
 				case 'C': // Cursor right
-					term_column += args[0]; break;
+					tty_column += args[0]; break;
 				case 'D': // Cursor left
-					term_column -= args[0]; break;
+					tty_column -= args[0]; break;
 				case 'J': // 2J: clear screen & reset cursor
 					if (args[0] == 2) {
-						init_term();
+						tty_init();
 					}
 					break;
 			}
@@ -370,47 +369,47 @@ int term_interpret_ansi(char c) {
 				for (uint32_t i = 0; i < current_arg; i++) {
 					switch (args[i]) {
 						case 0:
-							//term_set_blink(0); break;
-							move_cursor(); break;
-						case 1: saved_color = term_color; break;//save term color
-						case 2: term_color = saved_color; break;//restore term color
-						case 3: saved_menu_color = term_menu_color; saved_color = term_color; break;//save menu color
-						case 4: term_menu_color = saved_menu_color; term_color = saved_color; break;//restore menu color
+							//tty_set_blink(0); break;
+							tty_move_cursor(); break;
+						case 1: saved_color = tty_color; break;//save tty color
+						case 2: tty_color = saved_color; break;//restore tty color
+						case 3: saved_menu_color = tty_menu_color; saved_color = tty_color; break;//save menu color
+						case 4: tty_menu_color = saved_menu_color; tty_color = saved_color; break;//restore menu color
 						case 5:
-							//term_set_blink(1); break;
-							move_cursor(); break;
+							//tty_set_blink(1); break;
+							tty_move_cursor(); break;
 						case 30:
-							term_set_fg_color(COLOR_BLACK); break;
+							tty_set_fg_color(COLOR_BLACK); break;
 						case 31:
-							term_set_fg_color(COLOR_RED); break;
+							tty_set_fg_color(COLOR_RED); break;
 						case 32:
-							term_set_fg_color(COLOR_GREEN); break;
+							tty_set_fg_color(COLOR_GREEN); break;
 						case 33: // Yellow
-							term_set_fg_color(COLOR_BROWN); break;
+							tty_set_fg_color(COLOR_BROWN); break;
 						case 34:
-							term_set_fg_color(COLOR_BLUE); break;
+							tty_set_fg_color(COLOR_BLUE); break;
 						case 35:
-							term_set_fg_color(COLOR_MAGENTA); break;
+							tty_set_fg_color(COLOR_MAGENTA); break;
 						case 36:
-							term_set_fg_color(COLOR_CYAN); break;
+							tty_set_fg_color(COLOR_CYAN); break;
 						case 37:
-							term_set_fg_color(COLOR_WHITE); break;
+							tty_set_fg_color(COLOR_WHITE); break;
 						case 40:
-							term_set_bg_color(COLOR_BLACK); break;
+							tty_set_bg_color(COLOR_BLACK); break;
 						case 41:
-							term_set_bg_color(COLOR_RED); break;
+							tty_set_bg_color(COLOR_RED); break;
 						case 42:
-							term_set_bg_color(COLOR_GREEN); break;
+							tty_set_bg_color(COLOR_GREEN); break;
 						case 43: // Yellow
-							term_set_bg_color(COLOR_BROWN); break;
+							tty_set_bg_color(COLOR_BROWN); break;
 						case 44:
-							term_set_bg_color(COLOR_BLUE); break;
+							tty_set_bg_color(COLOR_BLUE); break;
 						case 45:
-							term_set_bg_color(COLOR_MAGENTA); break;
+							tty_set_bg_color(COLOR_MAGENTA); break;
 						case 46:
-							term_set_bg_color(COLOR_CYAN); break;
+							tty_set_bg_color(COLOR_CYAN); break;
 						case 47: // White
-							term_set_bg_color(COLOR_LIGHT_GREY); break;
+							tty_set_bg_color(COLOR_LIGHT_GREY); break;
 					}
 				}
 			}

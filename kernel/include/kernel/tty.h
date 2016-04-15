@@ -36,21 +36,21 @@ typedef struct {
 } entry_struct_t;
 
 
-void init_term();
-void term_clear();
-void term_menu_clear();
-void move_cursor();
-void print_entry_info(int32_t x, int32_t);
-void term_set_cursor(uint32_t row, uint32_t col);
-void term_putchar_at(char c, size_t x, size_t y);
-void term_setcolor(vga_color fg, vga_color bg);
-void term_change_bg_color(vga_color bg);
-void term_set_blink(int blink);
-void term_scrolldown();
-void term_putchar(char c);
-void term_write(const char* data, size_t size);
-void term_writestring(const char* data);
-int term_interpret_ansi(char c);
-void term_arrow(uint8_t sc);
+void tty_init();
+void tty_clear();
+void tty_menu_clear();
+void tty_move_cursor();
+void tty_print_entry_info(int32_t x, int32_t);
+void tty_set_cursor(uint32_t row, uint32_t col);
+void tty_putchar_at(char c, size_t x, size_t y);
+void tty_setcolor(vga_color fg, vga_color bg);
+void tty_change_bg_color(vga_color bg);
+void tty_set_blink(int blink);
+void tty_scrolldown();
+void tty_putchar(char c);
+void tty_write(const char* data, size_t size);
+void tty_writestring(const char* data);
+int tty_interpret_ansi(char c);
+void tty_arrow(uint8_t sc);
 
 #endif
