@@ -13,6 +13,7 @@ char machine[30];
 
 
 void kernel_main(multiboot* boot, uint32_t magic) {
+	#ifndef VID
 	tty_menu_clear();
 	tty_init();
 	tty_set_cursor(0,0);
@@ -61,6 +62,10 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	gets(machine);
 	//printf("%s", user);
 	main_loop();
+
+	#else
+	vid_init();
+	#endif
 
 }
 void main_loop(){

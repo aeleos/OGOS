@@ -15,8 +15,10 @@
 #include <kernel/shell.h>
 #include <kernel/com.h>
 #include <kernel/timer.h>
+#include <kernel/video.h>
 
 void main_loop();
 
+//#define VID
 
 #endif

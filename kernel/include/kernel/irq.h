@@ -63,4 +63,7 @@ void irq15();
 #define IRQ14 46
 #define IRQ15 47
 
+#define STDIO_SIZE 4096
+
+
 #endif
