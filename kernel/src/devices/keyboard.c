@@ -33,7 +33,7 @@ int shift;
 char *ascii_s;
 char *ascii_S;
 
-extern void *stdin;
+extern void *std_in;
 extern volatile uint32_t in_size;
 extern uint8_t inbuffer[STDIO_SIZE];
 void init_keyboard()
@@ -49,7 +49,7 @@ void init_keyboard()
 }
 
 void init_stdin(){
-  stdin = (uint8_t*) inbuffer;
+  std_in = (uint8_t*) inbuffer;
 
   for (int i = 0; i < STDIO_SIZE; i++) {
       inbuffer[i] = 0;

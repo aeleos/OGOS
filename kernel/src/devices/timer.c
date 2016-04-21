@@ -5,7 +5,7 @@
 #include <kernel/timer.h>
 
 int tick;
-void* stdin;
+void* std_in;
 volatile int in_size;
 uint8_t inbuffer[STDIO_SIZE];
 

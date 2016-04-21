@@ -12,7 +12,7 @@ INCLUDEDIR?=$(PREFIX)/include
 CFLAGS:=$(CFLAGS) -ffreestanding -fbuiltin -Wall -Wextra -Wno-format
 CPPFLAGS:=$(CPPFLAGS) -D_KERNEL_ -Iinclude
 LDFLAGS:=$(LDFLAGS)
-LIBS:=$(LIBS) -nostdlib -lk -lgcc
+LIBS:=$(LIBS) -nostdlib -lg -lgcc
 
 OBJS:=$(patsubst %.c,%.o,$(wildcard src/*/*/*.c))
 OBJS+=$(patsubst %.c,%.o,$(wildcard src/*/*.c))
