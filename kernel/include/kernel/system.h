@@ -1,6 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include <kernel/types.h>
 
 #define CLI() asm volatile("cli")
 #define STI() asm volatile("sti")

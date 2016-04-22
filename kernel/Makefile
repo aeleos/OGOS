@@ -1,4 +1,3 @@
-CFLAGS?=-O2 -g
 CPPFLAGS?=
 LDFLAGS?=-T linker.ld
 LIBS?=
@@ -9,7 +8,11 @@ EXEC_PREFIX?=$(PREFIX)
 BOOTDIR?=$(EXEC_PREFIX)/boot
 INCLUDEDIR?=$(PREFIX)/include
 
-CFLAGS:=$(CFLAGS) -ffreestanding -fbuiltin -Wall -Wextra -Wno-format
+CFLAGS  = -O2 -std=gnu99
+CFLAGS += -finline-functions -ffreestanding
+CFLAGS += -Wall -Wextra -Wno-unused-function -Wno-unused-parameter -Wno-format
+CFLAGS += -pedantic -fno-omit-frame-pointer
+CFLAGS += -D_KERNEL_
 CPPFLAGS:=$(CPPFLAGS) -D_KERNEL_ -Iinclude
 LDFLAGS:=$(LDFLAGS)
 LIBS:=$(LIBS) -nostdlib -lg -lgcc
@@ -35,7 +38,7 @@ OGOS.kernel: $(OBJS) linker.ld
 	$(CC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS) $(LIBS)
 
 %.o: %.c
-	$(CC) -c $< -o $@ -include stddef.h -std=gnu11 $(CFLAGS) $(CPPFLAGS)
+	$(CC) -c $< -o $@ $(CFLAGS) $(CPPFLAGS) -nostdlib -g
 
 %.o: %.S
 	$(CC) -c $< -o $@ $(CFLAGS) $(CPPFLAGS)

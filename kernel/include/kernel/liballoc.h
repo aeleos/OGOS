@@ -2,7 +2,7 @@
 #define _LIBALLOC_H
 
 #include <stdint.h>
-
+#include <kernel/types.h>
 #define PREFIX(func) k ## func
 
 int liballoc_lock();
