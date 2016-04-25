@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <kernel/system.h>
-#include <kernel/com.h>
-#include <stdbool.h>
 
 void panic(const char *msg, int line, char *file)
 {

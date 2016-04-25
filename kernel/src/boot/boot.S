@@ -22,7 +22,7 @@
 	.long 0	/* Linear graphics */
 	.long 0 /* These are in bytes in ToaruOS. Investigate. */
 	.long 0
-	.long 0
+	.long 32
 
 # Reserve a stack for the initial thread.
 .section .bootstrap_stack, "aw", @nobits

@@ -1,10 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <kernel/shell.h>
-#include <kernel/time.h>
-#include <kernel/tty.h>
-#include <kernel/system.h>
 
 extern int detect_cpu();
 

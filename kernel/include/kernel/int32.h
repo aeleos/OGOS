@@ -1,6 +1,9 @@
 #ifndef INT32_H
 #define INT32_H
 
+#include <kernel/system.h>
+
+
 typedef struct __attribute__ ((packed)) {
     unsigned short di, si, bp, sp, bx, dx, cx, ax;
     unsigned short gs, fs, es, ds, eflags;

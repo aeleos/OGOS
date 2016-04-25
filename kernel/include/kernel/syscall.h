@@ -1,8 +1,7 @@
 #ifndef SYSCALL_H
 #define SYSCALL_H
 
-#include <kernel/isr.h>
-#include <stdint.h>
+#include <kernel/system.h>
 
 typedef int(*sys_handler_t)(registers_t*);
 

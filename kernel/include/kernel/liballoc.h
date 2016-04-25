@@ -1,7 +1,7 @@
 #ifndef _LIBALLOC_H
 #define _LIBALLOC_H
 
-#include <stdint.h>
+#include <kernel/system.h>
 
 #define PREFIX(func) k ## func
 

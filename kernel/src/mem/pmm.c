@@ -1,11 +1,4 @@
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 #include <kernel/pmm.h>
-#include <kernel/paging.h>
-#include <kernel/multiboot.h>
 
 static uint32_t mem_size;
 static uint32_t used_blocks;

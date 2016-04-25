@@ -1,7 +1,3 @@
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-
 #include <kernel/idt.h>
 
 static idt_entry_t idt_entries[256];

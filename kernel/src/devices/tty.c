@@ -1,13 +1,4 @@
-#include <stddef.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <stdio.h>
 #include <kernel/tty.h>
-#include <kernel/com.h>
 
 #define ENTRY(x, y) tty_buffer[(y)*VGA_WIDTH+(x)]
 

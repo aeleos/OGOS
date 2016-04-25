@@ -1,5 +1,3 @@
-#include <stdio.h>
-
 #include <kernel/multiboot.h>
 
 void dump_multiboot_infos(multiboot* boot) {

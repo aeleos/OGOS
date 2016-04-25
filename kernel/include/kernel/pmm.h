@@ -1,9 +1,7 @@
 #ifndef PMM_H
 #define PMM_H
 
-#include <kernel/multiboot.h>
-
-#include <stdint.h>
+#include <kernel/system.h>
 
 void init_pmm(multiboot* boot);
 uint32_t pmm_get_map_size();
