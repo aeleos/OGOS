@@ -42,5 +42,5 @@ typedef struct {
 
 void panic(const char *msg, int line, char *file);
 void reboot();
-
+int rand( void ); // RAND_MAX assumed to be 32767
 #endif

@@ -140,16 +140,16 @@ static void liballoc_dump()
 #endif
 
 	printf( "liballoc: ------ Memory data ---------------\n");
-	printf( "liballoc: System memory allocated: %i bytes\n", l_allocated );
-	printf( "liballoc: Memory in used (malloc'ed): %i bytes\n", l_inuse );
-	printf( "liballoc: Warning count: %i\n", l_warningCount );
-	printf( "liballoc: Error count: %i\n", l_errorCount );
-	printf( "liballoc: Possible overruns: %i\n", l_possibleOverruns );
+	printf( "liballoc: System memory allocated: %d bytes\n", l_allocated );
+	printf( "liballoc: Memory in used (malloc'ed): %d bytes\n", l_inuse );
+	printf( "liballoc: Warning count: %d\n", l_warningCount );
+	printf( "liballoc: Error count: %d\n", l_errorCount );
+	printf( "liballoc: Possible overruns: %d\n", l_possibleOverruns );
 
 #ifdef DEBUG
 		while ( maj != NULL )
 		{
-			printf( "liballoc: %x: total = %i, used = %i\n",
+			printf( "liballoc: %x: total = %d, used = %d\n",
 						maj,
 						maj->size,
 						maj->usage );
@@ -157,7 +157,7 @@ static void liballoc_dump()
 			min = maj->first;
 			while ( min != NULL )
 			{
-				printf( "liballoc:    %x: %i bytes\n",
+				printf( "liballoc:    %x: %d bytes\n",
 							min,
 							min->size );
 				min = min->next;
@@ -201,7 +201,7 @@ static struct liballoc_major *allocate_new_page( unsigned int size )
 		{
 			l_warningCount += 1;
 			#if defined DEBUG || defined INFO
-			printf( "liballoc: WARNING: liballoc_alloc( %i ) return NULL\n", st );
+			printf( "liballoc: WARNING: liballoc_alloc( %d ) return NULL\n", st );
 			FLUSH();
 			#endif
 			return NULL;	// uh oh, we ran out of memory.
@@ -217,9 +217,9 @@ static struct liballoc_major *allocate_new_page( unsigned int size )
 		l_allocated += maj->size;
 
 		#ifdef DEBUG
-		printf( "liballoc: Resource allocated %x of %i pages (%i bytes) for %i size.\n", maj, st, maj->size, size );
+		printf( "liballoc: Resource allocated %x of %d pages (%d bytes) for %d size.\n", maj, st, maj->size, size );
 
-		printf( "liballoc: Total memory usage = %i KB\n",  (int)((l_allocated / (1024))) );
+		printf( "liballoc: Total memory usage = %d KB\n",  (int)((l_allocated / (1024))) );
 		FLUSH();
 		#endif
 
@@ -295,7 +295,7 @@ void *PREFIX(malloc)(size_t req_size)
 
 
 	#ifdef DEBUG
-	printf( "liballoc: %x PREFIX(malloc)( %i ): ",
+	printf( "liballoc: %x PREFIX(malloc)( %d ): ",
 					__builtin_return_address(0),
 					size );
 	FLUSH();
@@ -569,7 +569,7 @@ void *PREFIX(malloc)(size_t req_size)
 	FLUSH();
 	#endif
 	#if defined DEBUG || defined INFO
-	printf( "liballoc: WARNING: PREFIX(malloc)( %i ) returning NULL.\n", size);
+	printf( "liballoc: WARNING: PREFIX(malloc)( %d ) returning NULL.\n", size);
 	liballoc_dump();
 	FLUSH();
 	#endif
@@ -836,4 +836,193 @@ void* liballoc_alloc(uint32_t num) {
 
 int liballoc_free(void* virt, uint32_t num) {
 	return paging_free_pages((uintptr_t) virt, num);
+}
+
+extern uint32_t max_blocks;
+
+#define MAX_BLOCKS			80
+#define MAX_SIZE			(1024 * 1024)
+#define MAX_TIME			( 1 * 60 )
+
+
+/** A testing block to hold all allocated data. */
+struct block
+{
+	unsigned char *data;
+	int size;
+	unsigned char key;
+};
+
+
+
+/** The testing blocks. */
+static struct block blocks[ MAX_BLOCKS ];
+static long long totalMemory = 0;
+static int totalBlocks = 0;
+
+
+static int g_verbose = 0;
+
+
+
+
+static int malloc_random( int verbose )
+{
+	g_verbose = verbose;
+	totalMemory = 0;
+	totalBlocks = 0;
+
+	printf("malloc_random: this will take %d minute...\n", MAX_TIME/ 60 );
+
+
+	for ( int i = 0; i < MAX_BLOCKS; i++ )
+	{
+		blocks[ i ].data = NULL;
+		blocks[ i ].size = 0;
+		blocks[ i ].key  = 0;
+	}
+
+	int transactions = 0;
+	uint32_t start_time = timer_get_tick();
+
+	//	Random madness.
+	while (1==1)
+	{
+		int position = rand() % MAX_BLOCKS;
+
+		int diff = timer_get_tick() - start_time;
+		if ( diff > ( MAX_TIME ) ) break;
+
+		int tps = (++transactions) / (diff + 1);
+
+
+
+		  if ( blocks[position].data == NULL )
+		  {
+			blocks[position].size = rand() % MAX_SIZE;
+			blocks[position].data = (unsigned char*)kmalloc( blocks[position].size );
+			blocks[position].key  = rand() % 256;
+
+			if ( g_verbose != 0 )
+				printf("%d left, %d tps : %d, %d : %d: allocating %d bytes with %d key\n",
+								( MAX_TIME - diff ),
+								tps,
+								totalBlocks * 100 / MAX_BLOCKS,
+								(int)(totalMemory / (1024)),
+								position,
+								blocks[position].size,
+								blocks[position].key );
+
+			if ( blocks[position].data != NULL )
+			{
+				totalMemory += blocks[position].size;
+				totalBlocks += 1;
+
+				for ( int j = 0; j < blocks[position].size; j++ )
+					blocks[position].data[j] = blocks[position].key;
+			}
+
+		  }
+		  else
+		  {
+				for ( int j = 0; j < blocks[position].size; j++ )
+					if ( blocks[position].data[j] != blocks[position].key )
+					{
+						printf( "%d: %x (%d bytes, position %d) %d != %d: ERROR! Memory not consistent",
+										position,
+										blocks[position].data,
+										blocks[position].size,
+										j,
+										blocks[position].data[j],
+										blocks[position].key );
+						abort();
+					}
+
+
+				if ( g_verbose != 0 )
+					printf("%d left, %d tps : %d, %d : %d: freeing %d bytes with %d key\n",
+								( MAX_TIME - diff ),
+								tps,
+								totalBlocks * 100 / MAX_BLOCKS,
+								(int)(totalMemory / (1024)),
+								position,
+								blocks[position].size,
+								blocks[position].key );
+
+				kfree( blocks[position].data );
+				blocks[position].data = NULL;
+
+				totalMemory -= blocks[position].size;
+				totalBlocks -= 1;
+		  }
+
+	}
+
+	// Dump the memory map here.
+
+
+	// Free.
+	for ( int i = 0; i < MAX_BLOCKS; i++ )
+	{
+		if ( blocks[ i ].data != NULL ) kfree( blocks[ i ].data );
+		blocks[ i ].size = 0;
+		blocks[ i ].key  = 0;
+	}
+
+
+	// Final results.
+	printf("%d TPS, %d%s USAGE\n", transactions / MAX_TIME, totalBlocks * 100 / MAX_BLOCKS, "%" );
+
+	return 0;
+}
+
+
+
+
+static int malloc_large( int verbose )
+{
+	g_verbose = verbose;
+
+	printf("malloc_large: going to exhaust the memory...\n" );
+
+	for ( int i = 0; i < MAX_BLOCKS; i++ )
+		blocks[ i ].data = NULL;
+
+	int transactions = 0;
+	uint32_t start_time = timer_get_tick();
+
+	for ( int i = 0; i < MAX_BLOCKS; i++ )
+	{
+		blocks[ i ].data = (unsigned char*)kmalloc( MAX_SIZE );
+		if ( blocks[i].data == NULL ) break;
+
+		transactions += 1;
+	}
+
+	for ( int i = 0; i < MAX_BLOCKS; i++ )
+		if ( blocks[ i ].data != NULL ) kfree( blocks[ i ].data );
+
+
+	// Final results.
+	printf("%d blocks of %d size = %d MB, %d seconds\n",
+			 transactions,
+			 MAX_SIZE,
+			 (transactions * MAX_SIZE) / (1024 * 1024),
+			 timer_get_tick() - start_time
+			 );
+
+	return 0;
+}
+
+
+
+int malloc_test( int verbose )
+{
+	malloc_random( verbose );
+	malloc_random( verbose );
+	malloc_random( verbose );
+	malloc_large( verbose );
+	malloc_large( verbose );
+	malloc_large( verbose );
+	return 0;
 }

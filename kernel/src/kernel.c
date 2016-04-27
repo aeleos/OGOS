@@ -36,7 +36,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_stdin();
 
 	init_timer();
-
+	test("memory");
 	printf("Press any key to continue...");
 	getch();
 	tty_clear();
@@ -60,6 +60,8 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	printf("Machine: ");
 	gets(machine);
 	//printf("%s", user);
+
+
 	main_loop();
 
 }

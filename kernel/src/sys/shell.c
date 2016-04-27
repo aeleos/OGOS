@@ -8,6 +8,8 @@ void cmd_help(){
 -> time - display the time\n \
 -> clear - clear screen\n \
 -> reboot - reboot the PC\n \
+-> memtest - kmalloc and free stress test\n \
+-> memtestc - verbose memtest\n \
 """);
 }
 
@@ -28,16 +30,25 @@ void cmd_reboot()
     reboot();
 }
 
+void cmd_memtestv()
+{
+    malloc_test(1);
+}
 
-int cmd_limit = 4;
+void cmd_memtest()
+{
+    malloc_test(0);
+}
+
+int cmd_limit = 6;
 
 shell_cmd_t cmd_table[] = {
     {"help",  cmd_help},
     {"cpu",    cmd_cpu},
     {"clear",  cmd_clear},
     {"reboot",  cmd_reboot},
-    //{"time",  cmd_time},
-
+    {"memtest", cmd_memtest},
+    {"memtestv", cmd_memtestv},
 };
 
 int shell(char *cmd)

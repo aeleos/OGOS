@@ -15,4 +15,7 @@ void* PREFIX(realloc)(void*, size_t);
 void* PREFIX(calloc)(size_t, size_t);
 void PREFIX(free)(void*);
 
+int malloc_test( int verbose );
+
+
 #endif
