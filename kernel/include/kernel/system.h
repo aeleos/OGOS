@@ -33,13 +33,18 @@ typedef struct {
 #include <kernel/time.h>
 #include <kernel/timer.h>
 #include <kernel/tty.h>
+#include <kernel/tar.h>
+#include <kernel/vfs.h>
+#include <kernel/initrd.h>
+//#include <kernel/task.h>
+//#include <kernel/schedule.h>
 
 #define CLI() asm volatile("cli")
 #define STI() asm volatile("sti")
 #define HLT() asm volatile("hlt")
 
 #define keep_running() while(true) { HLT(); }
-
+#define PANIC(msg) panic(msg, __FILE__, __LINE__);
 void panic(const char *msg, int line, char *file);
 void reboot();
 int rand( void ); // RAND_MAX assumed to be 32767

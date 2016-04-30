@@ -9,7 +9,7 @@ void cmd_help(){
 -> clear - clear screen\n \
 -> reboot - reboot the PC\n \
 -> memtest - kmalloc and free stress test\n \
--> memtestc - verbose memtest\n \
+-> memtestv - verbose memtest\n \
 """);
 }
 

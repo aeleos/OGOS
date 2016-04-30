@@ -24,6 +24,7 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 
 	assert(magic == MULTIBOOT_EAX_MAGIC);
 	assert(boot->flags & MULTIBOOT_FLAG_MMAP);
+	assert(boot->mods_count > 0);
 	detect_cpu();
 	init_gdt();
 	init_idt();
@@ -34,6 +35,13 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	init_syscall();
 	init_keyboard();
 	init_stdin();
+
+	uint32_t initrd_start = *((uint32_t *)boot->mods_addr);
+	uint32_t initrd_end   = *((uint32_t *)(boot->mods_addr + 4));
+
+	vfs_root = init_initrd((void *)initrd_start);
+
+	vfs_print_content();
 
 	init_timer();
 	test("memory");

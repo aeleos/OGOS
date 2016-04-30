@@ -27,7 +27,7 @@ uint32_t test(char *test)
     kfree((void*)addr);
 
     //if we have not failed so far, print a sucessful message
-    printf("\tMemory management test passed, allocated %d bytes at %h\n", size, addr);
+    printf("\tMemory management test passed, allocated %d bytes at 0x%X\n", size, addr);
 
     //sucess
     return 0;
@@ -55,4 +55,27 @@ uint32_t test(char *test)
   return 1;
 }
 
+
+void
+vfs_print_content(void)
+{
+	// list the contents of /
+	int i = 0;
+	struct dirent *node = 0;
+	while (node = vfs_readdir(vfs_root, i)) {
+  		printf("Found file %s", node->name);
+  		struct vfs_node *fsnode = vfs_finddir(vfs_root, node->name);
+
+  		if (VFS_ISDIR(fsnode))
+    			printf("\n\t(directory)\n");
+  		else {
+    			printf("\n\t contents:\n");
+    			char buf[1024 + 1];
+    			uint32_t sz = vfs_read(fsnode, 0, 1024, buf);
+			buf[sz] = '\0';
+      			printf("%s\n", buf);
+  		}
+  		i++;
+	}
+}
 #endif

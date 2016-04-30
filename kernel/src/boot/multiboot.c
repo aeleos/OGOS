@@ -1,20 +1,20 @@
 #include <kernel/multiboot.h>
 
 void dump_multiboot_infos(multiboot* boot) {
-	/*
-	printf("Flags:\n");
-	printf("\tFLAG_MEM: %s\n", (boot->flags & MULTIBOOT_FLAG_MEM ? "Set" : "Not set"));
-	printf("\tFLAG_DEVICE: %s\n", (boot->flags & MULTIBOOT_FLAG_DEVICE ? "Set" : "Not set"));
-	printf("\tFLAG_CMDLINE: %s\n", (boot->flags & MULTIBOOT_FLAG_CMDLINE ? "Set" : "Not set"));
-	printf("\tFLAG_MODS: %s\n", (boot->flags & MULTIBOOT_FLAG_MODS ? "Set" : "Not set"));
-	printf("\tFLAG_AOUT: %s\n", (boot->flags & MULTIBOOT_FLAG_AOUT ? "Set" : "Not set"));
-	printf("\tFLAG_ELF: %s\n", (boot->flags & MULTIBOOT_FLAG_ELF ? "Set" : "Not set"));
-	printf("\tFLAG_MMAP: %s\n", (boot->flags & MULTIBOOT_FLAG_MMAP ? "Set" : "Not set"));
-	printf("\tFLAG_CONFIG: %s\n", (boot->flags & MULTIBOOT_FLAG_CONFIG ? "Set" : "Not set"));
-	printf("\tFLAG_LOADER: %s\n", (boot->flags & MULTIBOOT_FLAG_LOADER ? "Set" : "Not set"));
-	printf("\tFLAG_APM: %s\n", (boot->flags & MULTIBOOT_FLAG_APM ? "Set" : "Not set"));
-	printf("\tFLAG_VBE: %s\n", (boot->flags & MULTIBOOT_FLAG_VBE ? "Set" : "Not set"));
-	*/
+
+	printf("[BIOS] Flags:\n");
+	printf("[BIOS]\tFLAG_MEM: %s\n", (boot->flags & MULTIBOOT_FLAG_MEM ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_DEVICE: %s\n", (boot->flags & MULTIBOOT_FLAG_DEVICE ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_CMDLINE: %s\n", (boot->flags & MULTIBOOT_FLAG_CMDLINE ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_MODS: %s\n", (boot->flags & MULTIBOOT_FLAG_MODS ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_AOUT: %s\n", (boot->flags & MULTIBOOT_FLAG_AOUT ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_ELF: %s\n", (boot->flags & MULTIBOOT_FLAG_ELF ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_MMAP: %s\n", (boot->flags & MULTIBOOT_FLAG_MMAP ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_CONFIG: %s\n", (boot->flags & MULTIBOOT_FLAG_CONFIG ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_LOADER: %s\n", (boot->flags & MULTIBOOT_FLAG_LOADER ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_APM: %s\n", (boot->flags & MULTIBOOT_FLAG_APM ? "Set" : "Not set"));
+	printf("[BIOS]\tFLAG_VBE: %s\n", (boot->flags & MULTIBOOT_FLAG_VBE ? "Set" : "Not set"));
+
 	if (boot->flags & MULTIBOOT_FLAG_MEM) {
 		printf("[BIOS] Memory: lower=%dkB upper=%dMB\n", boot->mem_lower, boot->mem_upper/1024);
 	}
