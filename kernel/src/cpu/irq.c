@@ -22,7 +22,7 @@ void init_irq() {
 	idt_set_entry(46, (uint32_t) irq14, 0x08, 0x8E);
 	idt_set_entry(47, (uint32_t) irq15, 0x08, 0x8E);
 	STI();
-	printf("[IRQ] Initialized");
+	printf("[IRQ] Initialized\n");
 }
 
 void irq_handler(registers_t* regs) {

@@ -32,12 +32,12 @@ void cmd_reboot()
 
 void cmd_memtestv()
 {
-    malloc_test(1);
+    //malloc_test(1);
 }
 
 void cmd_memtest()
 {
-    malloc_test(0);
+   //malloc_test(0);
 }
 
 int cmd_limit = 6;

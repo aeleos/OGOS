@@ -6,7 +6,7 @@
 #include <kernel/gdt.h>
 #include <kernel/idt.h>
 #include <kernel/irq.h>
-#include <kernel/pmm.h>
+#include <kernel/kheap.h>
 #include <kernel/paging.h>
 #include <kernel/cpudetect.h>
 #include <kernel/keyboard.h>
@@ -15,6 +15,7 @@
 #include <kernel/shell.h>
 #include <kernel/com.h>
 #include <kernel/timer.h>
+#include <kernel/initrd.h>
 
 void main_loop();
 
