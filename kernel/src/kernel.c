@@ -13,7 +13,10 @@ uint32_t initrd_location;
 uint32_t initrd_end;
 
 
+
 void kernel_main(multiboot* boot, uint32_t initial_stack) {
+	#ifndef VID
+
 	tty_menu_clear();
 	tty_init();
 	tty_set_cursor(0,0);
@@ -88,6 +91,10 @@ void kernel_main(multiboot* boot, uint32_t initial_stack) {
 
 
 	main_loop();
+
+	#else
+	vid_init();
+	#endif
 
 }
 void main_loop(){

@@ -2,3 +2,6 @@
 isodir
 sysroot
 *.log
+toolchain/build
+toolchain/local
+toolchain/tarballs

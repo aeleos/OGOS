@@ -1,8 +1,9 @@
-SYSTEM_HEADER_PROJECTS="libc kernel"
-PROJECTS="libc kernel"
+SYSTEM_HEADER_PROJECTS="kernel"
+PROJECTS="kernel"
 
 export MAKE=${MAKE:-make}
-export HOST=i686-elf
+export HOST=i686-pc-ogos
+
 
 export AR=${HOST}-ar
 export AS=${HOST}-as
@@ -18,7 +19,7 @@ export CFLAGS='-O2 -g'
 export CPPFLAGS=''
 
 # Configure the cross-compiler to use the desired system root.
-export CC="$CC --sysroot=$PWD/sysroot"
+export CC="$CC --sysroot=$PWD/hdd"
 
 # Work around that the -elf gcc targets doesn't have a system include directory
 # because configure received --without-headers rather than --with-sysroot.

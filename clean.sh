@@ -6,6 +6,5 @@ for PROJECT in $PROJECTS; do
   $MAKE -C $PROJECT clean
 done
 
-rm -rfv sysroot
 rm -rfv isodir
 rm -rfv OGOS.iso

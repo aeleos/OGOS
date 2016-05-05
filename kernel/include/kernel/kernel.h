@@ -15,6 +15,7 @@
 #include <kernel/shell.h>
 #include <kernel/com.h>
 #include <kernel/timer.h>
+#include <kernel/video.h>
 #include <kernel/initrd.h>
 #include <kernel/task.h>
 #include <kernel/schedule.h>
@@ -70,6 +71,7 @@ vfs_print_content(void)
 	while ((node = vfs_readdir(vfs_root, i))) {
   		printf("Found file %s", node->name);
   		struct vfs_node *fsnode = vfs_finddir(vfs_root, node->name);
+>>>>>>> origin/master
 
   		if (VFS_ISDIR(fsnode))
     			printf("\n\t(directory)\n");

@@ -1,6 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include <kernel/types.h>
 
 #include <stdio.h>
 #include <stdlib.h>
