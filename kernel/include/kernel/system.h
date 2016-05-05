@@ -75,6 +75,37 @@ typedef struct page_directory
     uint32_t physicalAddr;
 } page_directory_t;
 
+// This structure defines a 'task' - a process.
+typedef struct task
+{
+  uint32_t id; //Process ID
+
+  //~ char name[32]; //Process name
+  //~ uint32_t name; //Process name
+
+  uint32_t esp, ebp; //Stack and base pointers.
+  uint32_t eip; //Instruction pointer.
+
+  uint32_t priority; //the priority of the process
+  uint32_t burst_time; //the process burst time
+  uint32_t averaged_priority; //A number that indicates average priority (priority and burst time)
+
+  uint32_t time_to_run; //Time left on quanta
+  uint32_t time_running; //Time spent running
+  uint32_t ready_to_run; //is the process ready to run
+
+  page_directory_t *page_directory; // Page directory.
+
+  void (*thread)(); //thread entry point
+  uint32_t thread_flags; //location of an array of thread arguments to go allong with that function
+
+  uint32_t stack; //kernel stack location.
+  uint32_t originalStack; //the original kernel stack location.
+
+  struct task *next; //the next task in a linked list.
+}task_t;
+
+
 
 #include <kernel/multiboot.h>
 #include <kernel/com.h>
@@ -95,8 +126,8 @@ typedef struct page_directory
 #include <kernel/tar.h>
 #include <kernel/vfs.h>
 #include <kernel/initrd.h>
-//#include <kernel/task.h>
-//#include <kernel/schedule.h>
+#include <kernel/task.h>
+#include <kernel/schedule.h>
 
 #define CLI() asm volatile("cli")
 #define STI() asm volatile("sti")

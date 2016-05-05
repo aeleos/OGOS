@@ -30,6 +30,8 @@ void kernel_main(multiboot* boot, uint32_t initial_stack) {
 	init_gdt();
 	init_idt();
 	init_irq();
+	init_timer();
+
 	//init_pmm(boot);
 //	init_paging();
 //	init_syscall();
@@ -47,12 +49,19 @@ void kernel_main(multiboot* boot, uint32_t initial_stack) {
 
 	initialise_paging(memorySize);
 
+
+	test("memory");
+
+	initialise_tasking();
+	printf("Initialized multitasking with PID: 0x%d\n", getpid());
+
+	//test("tasking");
+
 	vfs_root = init_initrd((void *)initrd_location);
 
 	vfs_print_content();
 
-	init_timer();
-	test("memory");
+
 	printf("Press any key to continue...");
 	getch();
 	tty_clear();

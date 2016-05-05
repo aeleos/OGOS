@@ -100,7 +100,6 @@ init_initrd(void *addr)
 	int x = tar_parse_mem(addr, &tar_files);
 	if (x == -1)
 		PANIC("tar_parse_mem");
-		printf("shit");
 
 	root_nodes = kmalloc(sizeof(struct vfs_node) * x);
 	nroot_nodes = x;

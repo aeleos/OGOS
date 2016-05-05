@@ -16,6 +16,9 @@
 #include <kernel/com.h>
 #include <kernel/timer.h>
 #include <kernel/initrd.h>
+#include <kernel/task.h>
+#include <kernel/schedule.h>
+
 
 void main_loop();
 
@@ -32,18 +35,19 @@ uint32_t test(char *test)
 
     //sucess
     return 0;
-  }/*else if(!strcmp(test, "tasking"))
+  }else if(!strcmp(test, "tasking"))
   {
     //~ start_task(PRIO_HIGH, PROC_SHORT, tasking_test, "tasking", "tasking_test");
 
-    s32int pid = fork(PRIO_LOW, PROC_SHORT, "test");
 
-    k_printf("Testing multitasking...\n");
+    int pid = fork_task(PRIO_LOW, PROC_SHORT, "test");
+
+    printf("Testing multitasking...\n");
 
     if(!pid)
     {
-      k_printf("\tMultitasking is operational with task PID: %h\n", getpid());
-      exit();
+      printf("\tMultitasking is operational with task PID: %h\n", getpid());
+      exit_task();
     }
 
     //we have no error since if pid never equals 0, then something with assert, page fault etc.
@@ -51,7 +55,7 @@ uint32_t test(char *test)
     //sucess
     return 0;
   }
-  */
+
   //something went wrong
   return 1;
 }
@@ -63,7 +67,7 @@ vfs_print_content(void)
 	// list the contents of /
 	int i = 0;
 	struct dirent *node = 0;
-	while (node = vfs_readdir(vfs_root, i)) {
+	while ((node = vfs_readdir(vfs_root, i))) {
   		printf("Found file %s", node->name);
   		struct vfs_node *fsnode = vfs_finddir(vfs_root, node->name);
 
