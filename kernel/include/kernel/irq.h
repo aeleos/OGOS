@@ -1,7 +1,6 @@
 #ifndef IRQ_H
 #define IRQ_H
 
-#include <kernel/isr.h> // For registers_t. Will move
 #include <kernel/system.h>
 
 typedef void (*handler_t)(registers_t*);

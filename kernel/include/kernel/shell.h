@@ -1,9 +1,7 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <kernel/system.h>
 
 typedef struct shell_cmd {
   char *name;

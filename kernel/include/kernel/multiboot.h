@@ -92,6 +92,9 @@ typedef struct {
 	uintptr_t vbe_interface_len;
 } multiboot;
 
+#include <kernel/system.h>
+
+
 void dump_multiboot_infos(multiboot* boot);
 
 #endif

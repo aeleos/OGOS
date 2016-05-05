@@ -29,6 +29,9 @@
 //#include <stdio.h> /* for printf(); */
 
 /* Required Declarations */
+
+#include <kernel/system.h>
+
 int do_intel(void);
 int do_amd(void);
 void printregs(int eax, int ebx, int ecx, int edx);

@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <kernel/com.h>
-#include <kernel/irq.h>
-#include <kernel/system.h>
 #include <kernel/timer.h>
 
 int tick;

@@ -1,13 +1,4 @@
 #include <kernel/time.h>
-#include <kernel/isr.h>
-#include <kernel/irq.h>
-#include <kernel/com.h>
-#include <kernel/tty.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
 
 
 static unsigned int ticks = 0;

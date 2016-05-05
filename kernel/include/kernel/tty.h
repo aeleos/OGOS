@@ -1,8 +1,7 @@
 #ifndef TTY_H
 #define TTY_H
 
-#include <stdint.h>
-#include <stddef.h>
+#include <kernel/system.h>
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25

@@ -1,8 +1,4 @@
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
 #include <kernel/gdt.h>
-#include <kernel/idt.h>
 
 static gdt_entry_t gdt_entries[6];
 static gdt_entry_ptr_t gdt_ptr;

@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include <kernel/irq.h>
+#include <kernel/system.h>
 
 #define KEYBOARD_BUFFER_SIZE 32
 

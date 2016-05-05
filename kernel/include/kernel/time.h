@@ -1,6 +1,8 @@
 #ifndef _TIME_H_
 #define _TIME_H_
 
+#include <kernel/system.h>
+
 
 
 #define RTC_RATE 3

@@ -1,6 +1,4 @@
 #include <kernel/cpudetect.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 
 

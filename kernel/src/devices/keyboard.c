@@ -1,11 +1,4 @@
-#include <stdio.h>
-
 #include <kernel/keyboard.h>
-#include <kernel/irq.h>
-#include <kernel/com.h>
-#include <kernel/sys.h>
-
-#include <kernel/tty.h>
 
 void (*keyboard_handler)(uint8_t *buf, uint16_t size);
 

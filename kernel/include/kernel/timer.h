@@ -1,6 +1,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <kernel/system.h>
+
+
 #define TIMER_IRQ IRQ0
 #define TIMER_FREQ 1000 // in Hz
 #define TIMER_QUOTIENT 1193180

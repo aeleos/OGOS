@@ -5,38 +5,67 @@
 #include <assert.h>
 #include <kernel/kernel.h>
 
-extern uint32_t KERNEL_BEGIN_PHYS;
-extern uint32_t KERNEL_END_PHYS;
-extern uint32_t KERNEL_SIZE;
 char user[20];
 char machine[30];
+extern uint32_t placement_address;
+uint32_t initial_esp;
+uint32_t initrd_location;
+uint32_t initrd_end;
 
 
+<<<<<<< HEAD
 void kernel_main(multiboot* boot, uint32_t magic) {
 	#ifndef VID
+=======
+void kernel_main(multiboot* boot, uint32_t initial_stack) {
+>>>>>>> origin/master
 	tty_menu_clear();
 	tty_init();
 	tty_set_cursor(0,0);
 
-	dump_multiboot_infos(boot);
-	printf("[Kernel] Loading kernel...\n");
-	printf("[Kernel] Loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
-		((uint32_t) &KERNEL_SIZE) >> 10);
+	//dump_multiboot_infos(boot);
+	//printf("[Kernel] Loading kernel...\n");
+	//printf("[Kernel] Loaded at 0x%X, ending at 0x%X (%dKiB)\n", &KERNEL_BEGIN_PHYS, &KERNEL_END_PHYS,
+	//	((uint32_t) &KERNEL_SIZE) >> 10);
 
-	assert(magic == MULTIBOOT_EAX_MAGIC);
+	//assert(magic == MULTIBOOT_EAX_MAGIC);
 	assert(boot->flags & MULTIBOOT_FLAG_MMAP);
+	assert(boot->mods_count > 0);
 	detect_cpu();
 	init_gdt();
 	init_idt();
 	init_irq();
+	init_timer();
 
-	init_pmm(boot);
-	init_paging();
-	init_syscall();
+	//init_pmm(boot);
+//	init_paging();
+//	init_syscall();
 	init_keyboard();
 	init_stdin();
+	initial_esp = initial_stack;
 
-	init_timer();
+	initrd_location = *((uint32_t*)boot->mods_addr);
+  initrd_end = *(uint32_t*)(boot->mods_addr + 4);
+	placement_address = initrd_end; // XXX: hacky here
+
+	uint32_t memorySize = ((boot->mem_lower + boot->mem_upper) * 1024); //Bytes
+
+	printf("Size of memory: %d KB, %d MB\n", memorySize / 1024, memorySize / (1024 * 1024));
+
+	initialise_paging(memorySize);
+
+
+	test("memory");
+
+	initialise_tasking();
+	printf("Initialized multitasking with PID: 0x%d\n", getpid());
+
+	//test("tasking");
+
+	vfs_root = init_initrd((void *)initrd_location);
+
+	vfs_print_content();
+
 
 	printf("Press any key to continue...");
 	getch();
@@ -61,6 +90,8 @@ void kernel_main(multiboot* boot, uint32_t magic) {
 	printf("Machine: ");
 	gets(machine);
 	//printf("%s", user);
+
+
 	main_loop();
 
 	#else
