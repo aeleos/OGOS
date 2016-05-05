@@ -15,13 +15,7 @@
 #include <kernel/shell.h>
 #include <kernel/com.h>
 #include <kernel/timer.h>
-<<<<<<< HEAD
 #include <kernel/video.h>
-
-void main_loop();
-
-//#define VID
-=======
 #include <kernel/initrd.h>
 #include <kernel/task.h>
 #include <kernel/schedule.h>

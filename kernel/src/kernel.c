@@ -13,12 +13,10 @@ uint32_t initrd_location;
 uint32_t initrd_end;
 
 
-<<<<<<< HEAD
-void kernel_main(multiboot* boot, uint32_t magic) {
-	#ifndef VID
-=======
+
 void kernel_main(multiboot* boot, uint32_t initial_stack) {
->>>>>>> origin/master
+	#ifndef VID
+
 	tty_menu_clear();
 	tty_init();
 	tty_set_cursor(0,0);
