@@ -6,8 +6,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Build everything by default.
 BUILD_BINUTILS=true
-BUILD_GCC=true;
-BUILD_NEWLIB=true;
+BUILD_GCC=true
+BUILD_NEWLIB=false
 BUILD_LIBSTDCPP=false
 BUILD_ZLIB=false
 BUILD_FREETYPE=false
