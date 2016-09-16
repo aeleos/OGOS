@@ -5,4 +5,5 @@ sysroot
 toolchain/tarballs
 toolchain/build
 toolchain/local
+toolchain/ogos
 hdd
