@@ -2,12 +2,13 @@
 #define SYSTEM_H
 
 
-#include <stdio.h>
-#include <stdlib.h>
+
+#include <libc/stdio.h>
 #include <stdint.h>
-#include <assert.h>
-#include <string.h>
+#include <libc/assert.h>
+#include <libc/string.h>
 #include <stdbool.h>
+#include <libc/ctype.h>
 
 typedef void* type_t;
 
@@ -106,7 +107,7 @@ typedef struct task
 }task_t;
 
 
-
+#include <kernel/va_list.h>
 #include <kernel/multiboot.h>
 #include <kernel/com.h>
 #include <kernel/cpudetect.h>

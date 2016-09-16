@@ -1,6 +1,9 @@
 #ifndef STDIO_H
 #define STDIO_H
 
+#include <libc/types.h>
+#include <kernel/va_list.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

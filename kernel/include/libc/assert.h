@@ -4,8 +4,8 @@
 #ifdef NDEBUG
 #define assert(expr)
 #else
-#include <stdio.h>
-#include <stdlib.h>
+#include <libc/stdio.h>
+#include <libc/stdlib.h>
 #define STR(x) #x
 #define assert(expr) \
 	do { \

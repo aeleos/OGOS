@@ -1,8 +1,7 @@
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include <libc/types.h>
+#include <libc/string.h>
+#include <libc/stdio.h>
+#include <libc/assert.h>
 #include <kernel/kernel.h>
 
 char user[20];
