@@ -4,7 +4,7 @@
 
 
 #include <libc/stdio.h>
-#include <stdint.h>
+#include <libc/types.h>
 #include <libc/assert.h>
 #include <libc/string.h>
 #include <stdbool.h>

@@ -36,7 +36,7 @@
 #define HEAP_MAGIC        0xDEADBEEF
 #define HEAP_MIN_SIZE     0x70000
 
-#include <stdint.h>
+#include <libc/types.h>
 #include <kernel/ordered_array.h>
 /**
    Size information for a hole/block

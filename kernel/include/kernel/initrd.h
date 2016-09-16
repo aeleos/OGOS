@@ -6,7 +6,7 @@
  *
  * Written for JamesM's kernel development tutorials.
  */
-#include <stdint.h>
+#include <libc/types.h>
 
  struct initrd_file_header {
  	char *filename[101];

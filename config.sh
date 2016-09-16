@@ -2,7 +2,7 @@ SYSTEM_HEADER_PROJECTS="kernel"
 PROJECTS="kernel"
 
 export MAKE=${MAKE:-make}
-export HOST=i686-elf
+export HOST=i686-pc-ogos
 
 export AR=${HOST}-ar
 export AS=${HOST}-as

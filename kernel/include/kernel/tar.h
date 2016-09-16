@@ -6,7 +6,7 @@
  * A (very) basic and naive "tape archive" parser implementation.
  */
 #include <kernel/system.h>
-#include <kernel/freebsd/queue.h>
+#include <freebsd/queue.h>
 
 
 struct tar_file {

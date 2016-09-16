@@ -1,7 +1,7 @@
 #ifndef COM_H
 #define COM_H
 
-#include <stdint.h>
+#include <libc/types.h>
 
 unsigned char inportb(uint16_t port);
 void outportb(uint16_t port, uint8_t data);
